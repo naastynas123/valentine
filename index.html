@@ -443,9 +443,9 @@
     - You can't legally ship Olivia Dean's "A Couple Minutes" inside a file like this.
     - Put YOUR OWN audio file in /audio/song.mp3 (or any mp3 you own/created), then it will play.
   -->
-  <audio id="bgm" loop preload="auto">
-    <source src="audio/song.mp3" type="audio/mpeg" />
-  </audio>
+  <audio id="bgm" preload="auto" loop muted>
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
 
   <div class="stage">
     <!-- SCREEN 1: Question -->
@@ -527,7 +527,7 @@
         const img = document.createElement('img');
         img.loading = 'lazy';
         img.alt = 'photo ' + i;
-        img.src = `images/${i}.jpg`;
+        img.src = `${i}.jpg`;
         tile.appendChild(img);
         collage.appendChild(tile);
       }
@@ -715,3 +715,4 @@ Your tubby mans ❤️`;
   </script>
 </body>
 </html>
+
