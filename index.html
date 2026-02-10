@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Valentine 💘</title>
+  <style>
+    :root{
+      --glass: rgba(20, 20, 25, .55);
+      --glass2: rgba(255,255,255,.10);
+      --shadow: 0 25px 80px rgba(0,0,0,.45);
+      --text: #fff;
+      --muted: rgba(255,255,255,.8);
+      --yes: #4cd964;
+      --no: #ff3b30;
+      --blueEnv: #a9d0ff;
+      --blueEnv2:#8fbefc;
+      --pinkSeal:#ff5c7a;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; overflow:hidden; }
+
+    /* ===== Collage background ===== */
+    body{
+      background:#000;
+    }
+    #collage{
+      position:fixed; inset:0;
+      display:grid;
+      gap:14px;
+      padding:18px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-auto-rows: 160px;
+      filter:saturate(1.05);
+      transform: scale(1.02);
+    }
+    @media (max-width: 1200px){
+      #collage{ grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 150px; }
+    }
+    @media (max-width: 760px){
+      #collage{ grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 145px; padding:12px; gap:10px; }
+    }
+    .tile{
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      background:#111;
+      box-shadow: 0 10px 25px rgba(0,0,0,.35);
+      transform: translateZ(0);
+    }
+    .tile img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transform: scale(1.02);
+    }
+    /* subtle vignette for tiles */
+    .tile::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(120% 120% at 50% 20%, rgba(0,0,0,.05), rgba(0,0,0,.45));
+      pointer-events:none;
+    }
+
+    /* global overlay to keep everything readable */
+    #overlayShade{
+      position:fixed; inset:0;
+      background: radial-gradient(1200px 700px at 50% 40%, rgba(0,0,0,.18), rgba(0,0,0,.55));
+      pointer-events:none;
+    }
+
+    /* ===== Center glass card ===== */
+    .stage{
+      position:fixed; inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+    .card{
+      width:min(980px, 94vw);
+      border-radius:34px;
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: clamp(22px, 4vw, 44px);
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(700px 260px at 50% 0%, rgba(255,255,255,.16), transparent 70%);
+      pointer-events:none;
+    }
+
+    h1{
+      margin:0 0 18px 0;
+      color:var(--text);
+      font-weight: 900;
+      letter-spacing: .2px;
+      line-height:1.05;
+      text-align:center;
+      font-size: clamp(34px, 4.6vw, 64px);
+      text-shadow: 0 10px 28px rgba(0,0,0,.55);
+    }
+    .sub{
+      text-align:center;
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 16px;
+      opacity:.95;
+    }
+
+    .row{
+      display:flex;
+      gap:18px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 22px;
+    }
+
+    /* ===== Buttons ===== */
+    .btn{
+      border:0;
+      cursor:pointer;
+      padding: 16px 28px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 18px;
+      color:#fff;
+      box-shadow: 0 16px 30px rgba(0,0,0,.25);
+      transition: transform .15s ease, filter .15s ease;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(2px) scale(.98); }
+    .btn:hover{ filter:brightness(1.05); transform: translateY(-1px); }
+
+    .btnYes{ background: linear-gradient(180deg, #5af07b, #26c45c); }
+    .btnNo { background: linear-gradient(180deg, #ff6b63, #ff2d24); }
+
+    /* ===== Audio button (place above Yes/No) ===== */
+    .audioWrap{
+      display:flex;
+      justify-content:center;
+      margin-top: 10px;
+    }
+    .audioBtn{
+      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.12));
+      border: 1px solid rgba(255,255,255,.18);
+      color:#fff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor:pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 12px 28px rgba(0,0,0,.25);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+    }
+    .pillDot{
+      width:10px; height:10px; border-radius:999px;
+      background:#ff4d6d;
+      box-shadow: 0 0 0 6px rgba(255,77,109,.18);
+    }
+    .audioBtn small{ opacity:.85; font-weight:700; }
+
+    /* ===== No button runaway area ===== */
+    #noZone{
+      position:relative;
+      width:min(520px, 92vw);
+      height: 90px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #noBtn{
+      position:absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      will-change: left, top;
+    }
+
+    /* ===== Confetti ===== */
+    #confetti{
+      position:fixed; inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      display:none;
+    }
+    .confetti{
+      position:absolute;
+      top:-10vh;
+      width:10px; height:16px;
+      opacity:.95;
+      border-radius:3px;
+      animation: fall linear forwards;
+    }
+    @keyframes fall{
+      to{
+        transform: translate(var(--dx), 120vh) rotate(var(--rot));
+      }
+    }
+
+    /* ===== Screens (single file) ===== */
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+
+    /* ===== Envelope screen ===== */
+    .envWrap{
+      display:flex;
+      justify-content:center;
+      margin-top: 26px;
+    }
+
+    .envelopeWrap{
+      position:relative;
+      width: 320px;
+      height: 230px;
+      cursor:pointer;
+      user-select:none;
+      filter: drop-shadow(0 22px 35px rgba(0,0,0,.35));
+    }
+    @media (max-width: 520px){
+      .envelopeWrap{ transform: scale(.92); }
+    }
+
+    /* envelope body */
+    .envBody{
+      position:absolute;
+      inset: 40px 0 0 0;
+      background: var(--blueEnv);
+      border-radius: 22px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.55);
+    }
+    /* inner shading */
+    .envBody::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.05));
+      pointer-events:none;
+    }
+
+    /* front triangles */
+    .envFrontLeft, .envFrontRight{
+      position:absolute; bottom:0; width:0; height:0;
+      border-top: 95px solid rgba(0,0,0,.05);
+      border-bottom: 0 solid transparent;
+      z-index: 5;
+    }
+    .envFrontLeft{
+      left:0;
+      border-right: 160px solid transparent;
+    }
+    .envFrontRight{
+      right:0;
+      border-left: 160px solid transparent;
+    }
+    .envFrontBottom{
+      position:absolute; left:0; right:0; bottom:0;
+      height: 120px;
+      background: linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.08));
+      clip-path: polygon(0 0, 50% 70%, 100% 0, 100% 100%, 0 100%);
+      z-index: 6;
+    }
+
+    /* flap */
+    .envFlap{
+      position:absolute;
+      left:0; right:0;
+      top: 40px;
+      height: 140px;
+      background: var(--blueEnv2);
+      clip-path: polygon(0 0, 100% 0, 50% 70%);
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform .45s ease;
+      z-index: 7;
+      border-top-left-radius: 22px;
+      border-top-right-radius: 22px;
+    }
+    .envelopeWrap:hover .envFlap{
+      transform: rotateX(160deg);
+    }
+
+    /* seal */
+    .seal{
+      position:absolute;
+      top: 112px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 56px; height: 56px;
+      background: var(--pinkSeal);
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size: 22px;
+      font-weight: 900;
+      z-index: 9;
+      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+      border: 3px solid rgba(255,255,255,.65);
+      transition: transform .45s ease;
+    }
+    .envelopeWrap:hover .seal{
+      transform: translateX(-50%) translateY(-6px) scale(1.02);
+    }
+
+    /* click me badge */
+    .clickMe{
+      position:absolute;
+      top: 152px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,.9);
+      color:#1d1d1f;
+      font-weight: 900;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      letter-spacing:.6px;
+      z-index: 8;
+      box-shadow: 0 16px 25px rgba(0,0,0,.18);
+      border: 1px solid rgba(0,0,0,.08);
+    }
+
+    /* PAPER: hidden inside by default (no peeking when not hovering) */
+    .paper{
+      position:absolute;
+      left: 18px;
+      right: 18px;
+      top: 62px;             /* inside the envelope */
+      height: 150px;
+      z-index: 4;
+      overflow:hidden;       /* hides paper when inside */
+      border-radius: 14px;
+      pointer-events:none;
+    }
+    .paperInner{
+      position:absolute;
+      left:0; right:0;
+      bottom: 0;
+      height: 150px;
+      background:#fff;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.20);
+      transform: translateY(120px); /* hidden down inside */
+      transition: transform .45s ease;
+    }
+    /* Hover: paper rises OUT THE TOP */
+    .envelopeWrap:hover .paper{
+      overflow: visible;
+    }
+    .envelopeWrap:hover .paperInner{
+      transform: translateY(-55px);
+    }
+
+    /* ===== Letter view ===== */
+    .letterCard{
+      width:min(860px, 94vw);
+      margin: 0 auto;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: var(--shadow);
+      padding: clamp(22px, 4vw, 42px);
+      position:relative;
+      overflow:hidden;
+    }
+    .letterTitle{
+      font-size: clamp(26px, 3.6vw, 40px);
+      margin: 0 0 14px 0;
+      text-align:center;
+      color:#fff;
+      font-weight: 900;
+      text-shadow: 0 10px 25px rgba(0,0,0,.45);
+    }
+    .paperSheet{
+      margin-top: 18px;
+      background: rgba(255,255,255,.95);
+      color:#1b1b1f;
+      border-radius: 22px;
+      padding: 22px 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.22);
+      border: 1px solid rgba(0,0,0,.06);
+      line-height: 1.55;
+      font-size: 18px;
+      min-height: 260px;
+      white-space: pre-wrap;
+    }
+    .typeCursor{
+      display:inline-block;
+      width: 10px;
+      height: 18px;
+      margin-left: 2px;
+      background:#1b1b1f;
+      vertical-align: -2px;
+      animation: blink .9s infinite;
+    }
+    @keyframes blink{ 50%{ opacity:0; } }
+
+    .backBtn{
+      margin-top: 16px;
+      display:flex;
+      justify-content:center;
+    }
+    .mini{
+      padding: 12px 18px;
+      font-size: 15px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.20);
+    }
+
+    /* Hide/Show */
+    .hide{ display:none !important; }
+  </style>
+</head>
+
+<body>
+  <!-- Collage -->
+  <div id="collage" aria-hidden="true"></div>
+  <div id="overlayShade" aria-hidden="true"></div>
+
+  <!-- Confetti -->
+  <div id="confetti"></div>
+
+  <!-- AUDIO
+    IMPORTANT:
+    - You can't legally ship Olivia Dean's "A Couple Minutes" inside a file like this.
+    - Put YOUR OWN audio file in /audio/song.mp3 (or any mp3 you own/created), then it will play.
+  -->
+  <audio id="bgm" loop preload="auto">
+    <source src="audio/song.mp3" type="audio/mpeg" />
+  </audio>
+
+  <div class="stage">
+    <!-- SCREEN 1: Question -->
+    <div id="screen1" class="card screen active">
+      <h1>Will you be my valentine Quyen? 💘</h1>
+
+      <div class="audioWrap">
+        <button id="audioBtn" class="audioBtn" type="button" title="Play / Pause music">
+          <span class="pillDot" id="audioDot"></span>
+          <span id="audioLabel">Play music <small>(click)</small></span>
+        </button>
+      </div>
+
+      <div class="row" style="margin-top:22px;">
+        <button id="yesBtn" class="btn btnYes" type="button">Yes 💞</button>
+
+        <div id="noZone" aria-label="No button zone">
+          <button id="noBtn" class="btn btnNo" type="button">No 😳</button>
+        </div>
+      </div>
+
+      <div class="sub" style="margin-top:18px;">(Try pressing “No” 😈)</div>
+    </div>
+
+    <!-- SCREEN 2: Envelope -->
+    <div id="screen2" class="card screen">
+      <h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
+
+      <div class="envWrap">
+        <div id="envelope" class="envelopeWrap" role="button" tabindex="0" aria-label="Open the envelope">
+          <div class="envBody"></div>
+
+          <!-- paper lives inside by default -->
+          <div class="paper">
+            <div class="paperInner"></div>
+          </div>
+
+          <!-- front details -->
+          <div class="envFrontLeft"></div>
+          <div class="envFrontRight"></div>
+          <div class="envFrontBottom"></div>
+
+          <!-- flap + seal -->
+          <div class="envFlap"></div>
+          <div class="seal">♥</div>
+
+          <div class="clickMe">CLICK ME</div>
+        </div>
+      </div>
+
+      <div class="sub" style="margin-top:14px;"></div>
+    </div>
+
+    <!-- SCREEN 3: Letter -->
+    <div id="screen3" class="screen" style="width:100%;">
+      <div class="letterCard">
+        <div class="letterTitle">💌 For Quyen</div>
+        <div class="paperSheet" id="typedOut"></div>
+        <div class="backBtn">
+          <button id="backToEnvelope" class="btn mini" type="button">← Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ====== Collage loader ======
+       Put your images in: /images/1.jpg, 2.jpg, 3.jpg ... etc
+       If you have 25 photos, name them 1.jpg .. 25.jpg
+    */
+    const collage = document.getElementById('collage');
+    const TOTAL_IMAGES = 25; // change this number to match how many you have
+
+    function makeCollage(){
+      collage.innerHTML = '';
+      for(let i=1;i<=TOTAL_IMAGES;i++){
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.alt = 'photo ' + i;
+        img.src = `images/${i}.jpg`;
+        tile.appendChild(img);
+        collage.appendChild(tile);
+      }
+    }
+    makeCollage();
+
+    /* ====== Screen switching ====== */
+    const s1 = document.getElementById('screen1');
+    const s2 = document.getElementById('screen2');
+    const s3 = document.getElementById('screen3');
+
+    function showScreen(n){
+      [s1,s2,s3].forEach(s => s.classList.remove('active'));
+      (n===1? s1 : n===2? s2 : s3).classList.add('active');
+    }
+
+    /* ====== No button runaway (stays within the card) ====== */
+    const noBtn = document.getElementById('noBtn');
+    const noZone = document.getElementById('noZone');
+
+    function moveNoButton(){
+      const zoneRect = noZone.getBoundingClientRect();
+      const btnRect  = noBtn.getBoundingClientRect();
+
+      const pad = 10;
+      const maxX = zoneRect.width  - btnRect.width  - pad*2;
+      const maxY = zoneRect.height - btnRect.height - pad*2;
+
+      const x = pad + Math.random() * Math.max(0, maxX);
+      const y = pad + Math.random() * Math.max(0, maxY);
+
+      noBtn.style.left = x + 'px';
+      noBtn.style.top  = y + 'px';
+
+      // little jump animation
+      noBtn.animate(
+        [
+          { transform: 'translate(-50%,-50%) scale(1)' },
+          { transform: 'translate(-50%,-55%) scale(1.03)' },
+          { transform: 'translate(-50%,-50%) scale(1)' },
+        ],
+        { duration: 220, easing: 'ease-out' }
+      );
+    }
+
+    // Run away on hover + on touch attempts
+    noBtn.addEventListener('mouseenter', moveNoButton);
+    noBtn.addEventListener('mousemove', moveNoButton);
+    noBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); moveNoButton(); }, {passive:false});
+
+    /* ====== Confetti ====== */
+    const confettiLayer = document.getElementById('confetti');
+
+    function launchConfetti(){
+      confettiLayer.style.display = 'block';
+      confettiLayer.innerHTML = '';
+
+      const pieces = 140;
+      const colors = ['#ff4d6d','#ffd166','#4cd964','#5ac8fa','#af52de','#ff9f0a','#ffffff'];
+
+      for(let i=0;i<pieces;i++){
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = (Math.random()*100) + 'vw';
+        c.style.background = colors[Math.floor(Math.random()*colors.length)];
+        c.style.width  = (6 + Math.random()*10) + 'px';
+        c.style.height = (10 + Math.random()*18) + 'px';
+        c.style.opacity = (0.6 + Math.random()*0.4);
+        c.style.setProperty('--dx', ((Math.random()*2-1)*40) + 'vw');
+        c.style.setProperty('--rot', (Math.random()*720 - 360) + 'deg');
+        c.style.animationDuration = (2.2 + Math.random()*1.6) + 's';
+        confettiLayer.appendChild(c);
+      }
+
+      setTimeout(()=>{ confettiLayer.style.display='none'; confettiLayer.innerHTML=''; }, 3600);
+    }
+
+    /* ====== Audio (with a button because browsers block autoplay) ====== */
+    const bgm = document.getElementById('bgm');
+    const audioBtn = document.getElementById('audioBtn');
+    const audioLabel = document.getElementById('audioLabel');
+    const audioDot = document.getElementById('audioDot');
+
+    function setAudioUI(playing){
+      audioLabel.innerHTML = playing ? 'Music playing <small>(click to pause)</small>' : 'Play music <small>(click)</small>';
+      audioDot.style.background = playing ? '#4cd964' : '#ff4d6d';
+      audioDot.style.boxShadow = playing ? '0 0 0 6px rgba(76,217,100,.18)' : '0 0 0 6px rgba(255,77,109,.18)';
+    }
+
+    async function toggleAudio(){
+      try{
+        if(bgm.paused){
+          await bgm.play();
+          setAudioUI(true);
+        }else{
+          bgm.pause();
+          setAudioUI(false);
+        }
+      }catch(err){
+        // If audio file missing or blocked, show a hint
+        setAudioUI(false);
+        alert("Music couldn't play.\nMake sure you have an audio file at: valentine-site/audio/song.mp3");
+      }
+    }
+
+    audioBtn.addEventListener('click', toggleAudio);
+    setAudioUI(false);
+
+    /* ====== Yes click -> confetti -> screen2 ====== */
+    const yesBtn = document.getElementById('yesBtn');
+    yesBtn.addEventListener('click', ()=>{
+      launchConfetti();
+      showScreen(2);
+    });
+
+    /* ====== Envelope -> screen3 + typewriter ====== */
+    const envelope = document.getElementById('envelope');
+    envelope.addEventListener('click', ()=>{
+      showScreen(3);
+      startTyping();
+    });
+    envelope.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        envelope.click();
+      }
+    });
+
+    /* ====== Typewriter letter ====== */
+    const typedOut = document.getElementById('typedOut');
+
+    const letterText =
+`I can't wait to spend the rest of my life with you pooks.
+
+You've given life a new purpose.
+You've given me something to smile about every day.
+You've given me something to be better at every day.
+
+I hope to see us grow into big back young adults, big back real adults, and big back parents with our big back children.
+
+I don't know what the future holds for us…
+but I know with you by my side, everything will be going right.
+
+Signed,
+Your tubby mans ❤️`;
+
+    let typingStarted = false;
+    function startTyping(){
+      if(typingStarted) return;
+      typingStarted = true;
+
+      typedOut.textContent = '';
+      const cursor = document.createElement('span');
+      cursor.className = 'typeCursor';
+      typedOut.appendChild(cursor);
+
+      let i=0;
+      const speed = 22; // lower = faster
+      const timer = setInterval(()=>{
+        if(i >= letterText.length){
+          clearInterval(timer);
+          cursor.remove();
+          return;
+        }
+        // insert before cursor
+        cursor.insertAdjacentText('beforebegin', letterText[i]);
+        i++;
+      }, speed);
+    }
+
+    /* Back button */
+    document.getElementById('backToEnvelope').addEventListener('click', ()=>{
+      // allow re-typing if you want (optional)
+      // typingStarted = false; 
+      showScreen(2);
+    });
+
+    /* ====== Helpful: if images fail to load, hide broken tiles ====== */
+    collage.addEventListener('error', (e)=>{
+      const img = e.target;
+      if(img && img.tagName === 'IMG'){
+        img.closest('.tile')?.classList.add('hide');
+      }
+    }, true);
+  </script>
+</body>
+</html>
