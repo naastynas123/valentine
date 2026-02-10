@@ -497,73 +497,103 @@
    NO button dodges cursor (UN-CATCHABLE)
    Replace your whole NO section with this
 ------------------------------*/
+/* -----------------------------
+   NO button dodges cursor (continuous chase)
+------------------------------*/
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const wrap = noBtn.parentElement; // btnRow
 
 let armed = false;
-let lastMove = 0;
+let mouseX = 0, mouseY = 0;
+let chasing = false;
 
 function armRunaway() {
   if (armed) return;
 
-  // Capture current position BEFORE switching to absolute
+  // lock its current position before making absolute
   const left = noBtn.offsetLeft;
   const top  = noBtn.offsetTop;
 
-  noBtn.classList.add("runaway"); // position:absolute;
-
-  // Put it back exactly where it was (so it doesn't overlap Yes)
+  noBtn.classList.add("runaway"); // position:absolute
   noBtn.style.left = left + "px";
   noBtn.style.top  = top + "px";
 
   armed = true;
 }
 
-function moveNoButton() {
+function randomizePositionAwayFromCursor() {
   armRunaway();
 
   const wrapRect = wrap.getBoundingClientRect();
   const b = noBtn.getBoundingClientRect();
 
-  const pad = 8; // keep it inside nicely
+  const pad = 8;
   const maxX = Math.max(0, wrapRect.width  - b.width  - pad * 2);
   const maxY = Math.max(0, wrapRect.height - b.height - pad * 2);
 
-  const x = pad + Math.random() * maxX;
-  const y = pad + Math.random() * maxY;
+  // Try a few times to find a spot farther from the cursor
+  let best = { x: pad, y: pad, score: -1 };
 
-  noBtn.style.left = x + "px";
-  noBtn.style.top  = y + "px";
+  for (let i = 0; i < 12; i++) {
+    const x = pad + Math.random() * maxX;
+    const y = pad + Math.random() * maxY;
+
+    // convert candidate to viewport coords to measure distance to cursor
+    const cx = wrapRect.left + x + b.width / 2;
+    const cy = wrapRect.top  + y + b.height / 2;
+
+    const score = Math.hypot(mouseX - cx, mouseY - cy); // bigger = farther
+    if (score > best.score) best = { x, y, score };
+  }
+
+  noBtn.style.left = best.x + "px";
+  noBtn.style.top  = best.y + "px";
 }
 
-function dodgeIfClose(e) {
-  const now = performance.now();
-  if (now - lastMove < 90) return; // throttle so it doesn’t spam-teleport
+function tick() {
+  if (!chasing) return;
 
   const b = noBtn.getBoundingClientRect();
   const cx = b.left + b.width / 2;
   const cy = b.top  + b.height / 2;
 
-  const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+  const dist = Math.hypot(mouseX - cx, mouseY - cy);
 
-  // If you get close -> it dashes away
-  if (dist < 120) {
-    lastMove = now;
-    moveNoButton();
+  // If cursor is close, keep dodging
+  if (dist < 140) {
+    randomizePositionAwayFromCursor();
   }
+
+  requestAnimationFrame(tick);
 }
 
-// Start dodging as soon as you approach the area
-wrap.addEventListener("mousemove", dodgeIfClose);
+// Track cursor inside the button area
+wrap.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
 
-// Extra insurance: if you ever get onto it, it still escapes
-noBtn.addEventListener("mouseenter", moveNoButton);
-noBtn.addEventListener("mousemove", dodgeIfClose);
+  if (!chasing) {
+    chasing = true;
+    requestAnimationFrame(tick);
+  }
+});
+
+// stop the loop when leaving the area
+wrap.addEventListener("mouseleave", () => {
+  chasing = false;
+});
+
+// extra insurance
+noBtn.addEventListener("mouseenter", () => {
+  chasing = true;
+  requestAnimationFrame(tick);
+});
 noBtn.addEventListener("mousedown", (e) => {
   e.preventDefault();
-  moveNoButton();
+  randomizePositionAwayFromCursor();
 });
+
 
 
 
@@ -696,5 +726,6 @@ your tubby mans 💘`;
   </script>
 </body>
 </html>
+
 
 
