@@ -493,73 +493,78 @@
       if (n===3) page3.classList.add("active");
     }
 
-    /* -----------------------------
-       NO button dodges cursor
-       ✅ UNCHANGED FROM YOUR ORIGINAL
-    ------------------------------*/
-    const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
+/* -----------------------------
+   NO button dodges cursor (UN-CATCHABLE)
+   Replace your whole NO section with this
+------------------------------*/
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const wrap = noBtn.parentElement; // btnRow
 
-    function moveNoButton() {
-      const wrap = noBtn.parentElement; // btnRow
-      const rect = wrap.getBoundingClientRect();
-      const b = noBtn.getBoundingClientRect();
+let armed = false;
+let lastMove = 0;
 
-      // ensure it's absolute once it starts moving
-      noBtn.classList.add("runaway");
+function armRunaway() {
+  if (armed) return;
 
-      // pick a random position inside the wrapper
-      const maxX = rect.width - b.width;
-      const maxY = rect.height - b.height;
+  // Capture current position BEFORE switching to absolute
+  const left = noBtn.offsetLeft;
+  const top  = noBtn.offsetTop;
 
-      const x = Math.max(0, Math.random() * maxX);
-      const y = Math.max(0, Math.random() * maxY);
+  noBtn.classList.add("runaway"); // position:absolute;
 
-      noBtn.style.left = x + "px";
-      noBtn.style.top  = y + "px";
-    }
+  // Put it back exactly where it was (so it doesn't overlap Yes)
+  noBtn.style.left = left + "px";
+  noBtn.style.top  = top + "px";
 
-    const noBtn = document.getElementById("noBtn");
-const btnRow = noBtn.parentElement;
-
-noBtn.classList.add("runaway");
+  armed = true;
+}
 
 function moveNoButton() {
-  const wrap = btnRow.getBoundingClientRect();
+  armRunaway();
+
+  const wrapRect = wrap.getBoundingClientRect();
   const b = noBtn.getBoundingClientRect();
 
-  const maxX = wrap.width - b.width;
-  const maxY = wrap.height - b.height;
+  const pad = 8; // keep it inside nicely
+  const maxX = Math.max(0, wrapRect.width  - b.width  - pad * 2);
+  const maxY = Math.max(0, wrapRect.height - b.height - pad * 2);
 
-  const x = Math.random() * maxX;
-  const y = Math.random() * maxY;
+  const x = pad + Math.random() * maxX;
+  const y = pad + Math.random() * maxY;
 
   noBtn.style.left = x + "px";
   noBtn.style.top  = y + "px";
 }
 
-// Chase detection
-btnRow.addEventListener("mousemove", (e) => {
+function dodgeIfClose(e) {
+  const now = performance.now();
+  if (now - lastMove < 90) return; // throttle so it doesn’t spam-teleport
+
   const b = noBtn.getBoundingClientRect();
-
   const cx = b.left + b.width / 2;
-  const cy = b.top + b.height / 2;
+  const cy = b.top  + b.height / 2;
 
-  const dx = e.clientX - cx;
-  const dy = e.clientY - cy;
-  const distance = Math.hypot(dx, dy);
+  const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
 
-  // If cursor gets close → DASH
-  if (distance < 100) {
+  // If you get close -> it dashes away
+  if (dist < 120) {
+    lastMove = now;
     moveNoButton();
   }
-});
+}
 
-// Extra insurance: clicking still fails
+// Start dodging as soon as you approach the area
+wrap.addEventListener("mousemove", dodgeIfClose);
+
+// Extra insurance: if you ever get onto it, it still escapes
+noBtn.addEventListener("mouseenter", moveNoButton);
+noBtn.addEventListener("mousemove", dodgeIfClose);
 noBtn.addEventListener("mousedown", (e) => {
   e.preventDefault();
   moveNoButton();
 });
+
 
 
     /* -----------------------------
@@ -691,4 +696,5 @@ your tubby mans 💘`;
   </script>
 </body>
 </html>
+
 
