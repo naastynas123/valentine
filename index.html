@@ -519,8 +519,48 @@
       noBtn.style.top  = y + "px";
     }
 
-    noBtn.addEventListener("mouseenter", moveNoButton);
-    noBtn.addEventListener("click", moveNoButton);
+    const noBtn = document.getElementById("noBtn");
+const btnRow = noBtn.parentElement;
+
+noBtn.classList.add("runaway");
+
+function moveNoButton() {
+  const wrap = btnRow.getBoundingClientRect();
+  const b = noBtn.getBoundingClientRect();
+
+  const maxX = wrap.width - b.width;
+  const maxY = wrap.height - b.height;
+
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top  = y + "px";
+}
+
+// Chase detection
+btnRow.addEventListener("mousemove", (e) => {
+  const b = noBtn.getBoundingClientRect();
+
+  const cx = b.left + b.width / 2;
+  const cy = b.top + b.height / 2;
+
+  const dx = e.clientX - cx;
+  const dy = e.clientY - cy;
+  const distance = Math.hypot(dx, dy);
+
+  // If cursor gets close → DASH
+  if (distance < 100) {
+    moveNoButton();
+  }
+});
+
+// Extra insurance: clicking still fails
+noBtn.addEventListener("mousedown", (e) => {
+  e.preventDefault();
+  moveNoButton();
+});
+
 
     /* -----------------------------
        CONFETTI
@@ -651,3 +691,4 @@ your tubby mans 💘`;
   </script>
 </body>
 </html>
+
