@@ -500,100 +500,38 @@
 /* -----------------------------
    NO button dodges cursor (continuous chase)
 ------------------------------*/
-const noBtn = document.getElementById("noBtn");
-const yesBtn = document.getElementById("yesBtn");
-const wrap = noBtn.parentElement; // btnRow
+const noBtn = document.getElementById('noBtn');
+    const noZone = document.getElementById('noZone');
 
-let armed = false;
-let mouseX = 0, mouseY = 0;
-let chasing = false;
+    function moveNoButton(){
+      const zoneRect = noZone.getBoundingClientRect();
+      const btnRect  = noBtn.getBoundingClientRect();
 
-function armRunaway() {
-  if (armed) return;
+      const pad = 10;
+      const maxX = zoneRect.width  - btnRect.width  - pad*2;
+      const maxY = zoneRect.height - btnRect.height - pad*2;
 
-  // lock its current position before making absolute
-  const left = noBtn.offsetLeft;
-  const top  = noBtn.offsetTop;
+      const x = pad + Math.random() * Math.max(0, maxX);
+      const y = pad + Math.random() * Math.max(0, maxY);
 
-  noBtn.classList.add("runaway"); // position:absolute
-  noBtn.style.left = left + "px";
-  noBtn.style.top  = top + "px";
+      noBtn.style.left = x + 'px';
+      noBtn.style.top  = y + 'px';
 
-  armed = true;
-}
+      // little jump animation
+      noBtn.animate(
+        [
+          { transform: 'translate(-50%,-50%) scale(1)' },
+          { transform: 'translate(-50%,-55%) scale(1.03)' },
+          { transform: 'translate(-50%,-50%) scale(1)' },
+        ],
+        { duration: 220, easing: 'ease-out' }
+      );
+    }
 
-function randomizePositionAwayFromCursor() {
-  armRunaway();
-
-  const wrapRect = wrap.getBoundingClientRect();
-  const b = noBtn.getBoundingClientRect();
-
-  const pad = 8;
-  const maxX = Math.max(0, wrapRect.width  - b.width  - pad * 2);
-  const maxY = Math.max(0, wrapRect.height - b.height - pad * 2);
-
-  // Try a few times to find a spot farther from the cursor
-  let best = { x: pad, y: pad, score: -1 };
-
-  for (let i = 0; i < 12; i++) {
-    const x = pad + Math.random() * maxX;
-    const y = pad + Math.random() * maxY;
-
-    // convert candidate to viewport coords to measure distance to cursor
-    const cx = wrapRect.left + x + b.width / 2;
-    const cy = wrapRect.top  + y + b.height / 2;
-
-    const score = Math.hypot(mouseX - cx, mouseY - cy); // bigger = farther
-    if (score > best.score) best = { x, y, score };
-  }
-
-  noBtn.style.left = best.x + "px";
-  noBtn.style.top  = best.y + "px";
-}
-
-function tick() {
-  if (!chasing) return;
-
-  const b = noBtn.getBoundingClientRect();
-  const cx = b.left + b.width / 2;
-  const cy = b.top  + b.height / 2;
-
-  const dist = Math.hypot(mouseX - cx, mouseY - cy);
-
-  // If cursor is close, keep dodging
-  if (dist < 140) {
-    randomizePositionAwayFromCursor();
-  }
-
-  requestAnimationFrame(tick);
-}
-
-// Track cursor inside the button area
-wrap.addEventListener("mousemove", (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-
-  if (!chasing) {
-    chasing = true;
-    requestAnimationFrame(tick);
-  }
-});
-
-// stop the loop when leaving the area
-wrap.addEventListener("mouseleave", () => {
-  chasing = false;
-});
-
-// extra insurance
-noBtn.addEventListener("mouseenter", () => {
-  chasing = true;
-  requestAnimationFrame(tick);
-});
-noBtn.addEventListener("mousedown", (e) => {
-  e.preventDefault();
-  randomizePositionAwayFromCursor();
-});
-
+    // Run away on hover + on touch attempts
+    noBtn.addEventListener('mouseenter', moveNoButton);
+    noBtn.addEventListener('mousemove', moveNoButton);
+    noBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); moveNoButton(); }, {passive:false});
 
 
 
@@ -726,6 +664,7 @@ your tubby mans 💘`;
   </script>
 </body>
 </html>
+
 
 
 
