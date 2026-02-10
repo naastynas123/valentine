@@ -501,39 +501,62 @@
    NO button dodges cursor (continuous chase)
 ------------------------------*/
 const noBtn = document.getElementById('noBtn');
-    const noZone = document.getElementById('noZone');
+const noZone = document.getElementById('noZone');
 
-    function moveNoButton(){
-      const zoneRect = noZone.getBoundingClientRect();
-      const btnRect  = noBtn.getBoundingClientRect();
+function moveNoButton(){
+  const zoneRect = noZone.getBoundingClientRect();
+  const btnRect  = noBtn.getBoundingClientRect();
 
-      const pad = 10;
-      const maxX = zoneRect.width  - btnRect.width  - pad*2;
-      const maxY = zoneRect.height - btnRect.height - pad*2;
+  const pad = 10;
+  const maxX = zoneRect.width  - btnRect.width  - pad*2;
+  const maxY = zoneRect.height - btnRect.height - pad*2;
 
-      const x = pad + Math.random() * Math.max(0, maxX);
-      const y = pad + Math.random() * Math.max(0, maxY);
+  const x = pad + Math.random() * Math.max(0, maxX);
+  const y = pad + Math.random() * Math.max(0, maxY);
 
-      noBtn.style.left = x + 'px';
-      noBtn.style.top  = y + 'px';
+  noBtn.style.left = x + 'px';
+  noBtn.style.top  = y + 'px';
 
-      // little jump animation
-      noBtn.animate(
-        [
-          { transform: 'translate(-50%,-50%) scale(1)' },
-          { transform: 'translate(-50%,-55%) scale(1.03)' },
-          { transform: 'translate(-50%,-50%) scale(1)' },
-        ],
-        { duration: 220, easing: 'ease-out' }
-      );
-    }
+  noBtn.animate(
+    [
+      { transform: 'translate(-50%,-50%) scale(1)' },
+      { transform: 'translate(-50%,-55%) scale(1.03)' },
+      { transform: 'translate(-50%,-50%) scale(1)' },
+    ],
+    { duration: 220, easing: 'ease-out' }
+  );
+}
 
-    // Run away on hover + on touch attempts
-    noBtn.addEventListener('mouseenter', moveNoButton);
-    noBtn.addEventListener('mousemove', moveNoButton);
-    noBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); moveNoButton(); }, {passive:false});
+// --- CONTINUOUS CHASE ---
+let lastMove = 0;
 
+function chase(e){
+  const now = performance.now();
+  if (now - lastMove < 80) return; // throttle so it doesn't spam too hard
 
+  const btnRect = noBtn.getBoundingClientRect();
+  const cx = btnRect.left + btnRect.width / 2;
+  const cy = btnRect.top  + btnRect.height / 2;
+
+  const mx = e.touches ? e.touches[0].clientX : e.clientX;
+  const my = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const dist = Math.hypot(mx - cx, my - cy);
+
+  // if cursor/finger gets close, dash away
+  if (dist < 140) {
+    lastMove = now;
+    moveNoButton();
+  }
+}
+
+// Listen on the ZONE, not the button
+noZone.addEventListener('mousemove', chase);
+noZone.addEventListener('touchmove', (e)=>{ e.preventDefault(); chase(e); }, { passive:false });
+
+// Still keep these as backup
+noBtn.addEventListener('mouseenter', moveNoButton);
+noBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); moveNoButton(); }, { passive:false });
 
     /* -----------------------------
        CONFETTI
@@ -664,6 +687,7 @@ your tubby mans 💘`;
   </script>
 </body>
 </html>
+
 
 
 
