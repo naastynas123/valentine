@@ -262,7 +262,7 @@
       box-shadow: 0 12px 18px rgba(0,0,0,.22);
     }
 
-    /* paper */
+    /* paper (hidden inside when NOT hovered) */
     .paper{
       position:absolute;
       left:22px;
@@ -284,6 +284,7 @@
       pointer-events:none;
     }
 
+    /* hover open */
     .envelope:hover .paper{ transform: translateY(-10px); }
     .envelope:hover .env-flap{ transform: rotateX(165deg); }
     .envelope:hover .seal{ transform: translateX(-50%) translateY(-10px) scale(.95); }
@@ -331,6 +332,7 @@
       z-index:5;
     }
 
+    /* slightly lighter overall */
     .shade{
       position:fixed; inset:0;
       background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55));
@@ -360,12 +362,13 @@
       <div id="page1" class="page active">
         <h1>Will you be my Valentine Quyen? 💘</h1>
 
+        <!-- audio button (first thing she sees) -->
         <button id="soundBtn" class="audioBtn" type="button">
           <span id="audioDot" class="audioDot"></span>
           <span id="soundText">Play music</span>
         </button>
 
-        <div id="btnRow" class="btnRow" style="position:relative;">
+        <div class="btnRow" style="position:relative;">
           <button id="yesBtn" class="btn yes" type="button">Yes 💖</button>
           <button id="noBtn" class="btn no" type="button">No 🥺</button>
         </div>
@@ -399,10 +402,8 @@
 
   <script>
     /* -----------------------------
-       COLLAGE (now with fallback paths)
-       Tries:
-       - images/1.jpg .. images/25.jpg
-       - 1.jpg .. 25.jpg (root)
+       COLLAGE (loads 1.jpg ... 25.jpg from ROOT)
+       Your images are 1.jpg .. 25.jpg in the same folder as this HTML.
     ------------------------------*/
     const COLLAGE_COUNT = 25;
 
@@ -418,19 +419,11 @@
         img.alt = `photo ${i}`;
         img.loading = "lazy";
 
-        const primary = `images/${i}.jpg`;
-        const fallback = `${i}.jpg`;
+        // ✅ ROOT images
+        img.src = `${i}.jpg`;
 
-        img.src = primary;
-
-        // If /images path fails, try root. If root fails too, hide tile.
-        img.onerror = () => {
-          if (img.src.includes("/images/") || img.src.endsWith(primary)) {
-            img.src = fallback;
-          } else {
-            tile.style.display = "none";
-          }
-        };
+        // if an image missing, hide tile
+        img.onerror = () => tile.style.display = "none";
 
         tile.appendChild(img);
         collage.appendChild(tile);
@@ -439,9 +432,7 @@
     makeCollage();
 
     /* -----------------------------
-       AUDIO (fixed: play/pause toggle)
-       IMPORTANT: song.mp3 must be next to this HTML,
-       or change src above to e.g. "assets/song.mp3"
+       AUDIO (toggle play/pause)
     ------------------------------*/
     const bgm = document.getElementById("bgm");
     const soundBtn = document.getElementById("soundBtn");
@@ -449,7 +440,7 @@
     const soundText = document.getElementById("soundText");
 
     function setAudioUI(playing){
-      if (playing) {
+      if (playing){
         audioDot.classList.add("on");
         soundText.textContent = "Music playing (click to pause)";
       } else {
@@ -458,25 +449,35 @@
       }
     }
 
-    setAudioUI(false);
+    async function playMusic(){
+      try {
+        bgm.muted = false;
+        bgm.volume = 0.8;
+        await bgm.play();              // ✅ must be triggered by user click
+        setAudioUI(true);
+      } catch (e) {
+        setAudioUI(false);
+        console.error("Audio blocked or failed. Check song.mp3 is next to index.html", e);
+      }
+    }
 
+    function pauseMusic(){
+      bgm.pause();
+      setAudioUI(false);
+    }
+
+    // Sync UI if audio stops/starts for any reason
     bgm.addEventListener("play", () => setAudioUI(true));
     bgm.addEventListener("pause", () => setAudioUI(false));
 
-    soundBtn.addEventListener("click", async () => {
-      try {
-        if (bgm.paused) {
-          bgm.muted = false;
-          bgm.volume = 0.8;
-          await bgm.play(); // must be inside click
-        } else {
-          bgm.pause();
-        }
-      } catch (e) {
-        console.error("Audio failed. Check song.mp3 path/name.", e);
-        setAudioUI(false);
-      }
+    // Button toggles play/pause
+    soundBtn.addEventListener("click", () => {
+      if (bgm.paused) playMusic();
+      else pauseMusic();
     });
+
+    // optional: attempt once on load (usually blocked, but harmless)
+    setAudioUI(false);
 
     /* -----------------------------
        PAGES
@@ -493,21 +494,23 @@
     }
 
     /* -----------------------------
-       NO button dodges as you follow it (fixed)
-       Moves when cursor gets close (not just once on mouseenter)
+       NO button dodges cursor
+       ✅ UNCHANGED FROM YOUR ORIGINAL
     ------------------------------*/
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
-    const btnRow = document.getElementById("btnRow");
 
     function moveNoButton() {
-      const wrapRect = btnRow.getBoundingClientRect();
+      const wrap = noBtn.parentElement; // btnRow
+      const rect = wrap.getBoundingClientRect();
       const b = noBtn.getBoundingClientRect();
 
+      // ensure it's absolute once it starts moving
       noBtn.classList.add("runaway");
 
-      const maxX = wrapRect.width - b.width;
-      const maxY = wrapRect.height - b.height;
+      // pick a random position inside the wrapper
+      const maxX = rect.width - b.width;
+      const maxY = rect.height - b.height;
 
       const x = Math.max(0, Math.random() * maxX);
       const y = Math.max(0, Math.random() * maxY);
@@ -516,30 +519,7 @@
       noBtn.style.top  = y + "px";
     }
 
-    // Keep moving while you chase it:
-    // If mouse is within "radius" pixels of the No button, it jumps away.
-    const radius = 90;
-    let lastMove = 0;
-
-    btnRow.addEventListener("mousemove", (e) => {
-      const now = performance.now();
-      if (now - lastMove < 80) return; // throttle so it doesn't teleport too fast
-
-      const rect = noBtn.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist < radius) {
-        lastMove = now;
-        moveNoButton();
-      }
-    });
-
-    // Still dodge if clicked
+    noBtn.addEventListener("mouseenter", moveNoButton);
     noBtn.addEventListener("click", moveNoButton);
 
     /* -----------------------------
@@ -662,6 +642,12 @@ your tubby mans 💘`;
         typeIt(letter, 18);
       }
     });
+
+    /* -----------------------------
+       IMPORTANT PATH NOTES:
+       - Photos: keep 1.jpg .. 25.jpg next to this HTML file.
+       - Music: keep song.mp3 next to this HTML file.
+    ------------------------------*/
   </script>
 </body>
 </html>
