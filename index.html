@@ -7,116 +7,239 @@
 
 <style>
 :root{
-  --glass: rgba(20,20,20,.45);
-  --glass-border: rgba(255,255,255,.18);
-  --text: #fff;
-  --green: #46c26f;
-  --green2:#2fb85c;
-  --red: #f04a4a;
-  --red2:#e23c3c;
-  --envelope:#9fc7ff;
-  --envelope-dark:#86b4ff;
-  --paper:#ffffff;
-  --seal:#ff5a7a;
+ --glass: rgba(20,20,20,.45);
+ --glass-border: rgba(255,255,255,.18);
+ --text:#fff;
+ --green:#46c26f;
+ --green2:#2fb85c;
+ --red:#f04a4a;
+ --red2:#e23c3c;
+ --envelope:#9fc7ff;
+ --envelope-dark:#86b4ff;
+ --paper:#ffffff;
+ --seal:#ff5a7a;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color:var(--text);
-  overflow:hidden;
-  background:#000;
+ margin:0;
+ font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+ color:var(--text);
+ overflow:hidden;
+ background:#000;
 }
 
-/* Keep your original styling unchanged */
+/* COLLAGE */
+#collage{
+ position:fixed;
+ inset:0;
+ display:grid;
+ grid-template-columns:repeat(6,1fr);
+ grid-auto-rows:160px;
+ gap:14px;
+ padding:18px;
+ transform:scale(1.04);
+ z-index:0;
+}
+.tile{
+ border-radius:22px;
+ overflow:hidden;
+ box-shadow:0 10px 30px rgba(0,0,0,.55);
+ background:#111;
+}
+.tile img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+/* GLASS CARD */
+.centerWrap{
+ position:fixed;
+ inset:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:22px;
+ z-index:2;
+}
+.glass{
+ width:min(1050px,95vw);
+ min-height:min(560px,86vh);
+ border-radius:28px;
+ padding:34px 26px;
+ background:var(--glass);
+ border:1px solid var(--glass-border);
+ backdrop-filter:blur(16px);
+ box-shadow:0 30px 70px rgba(0,0,0,.6);
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ gap:18px;
+}
+
+h1{
+ margin:0;
+ font-size:clamp(34px,5vw,62px);
+}
+
+/* BUTTONS */
 .btnRow{
-  display:flex;
-  gap:16px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-top:10px;
-  position:relative;
-  width:100%;
-  max-width:600px;
-  height:220px; /* movement arena */
+ display:flex;
+ gap:16px;
+ flex-wrap:wrap;
+ justify-content:center;
+ margin-top:10px;
+ position:relative;
+ width:100%;
+ max-width:600px;
+ height:220px;
 }
 
 .btn{
-  border:0;
-  border-radius:999px;
-  padding:14px 26px;
-  font-weight:900;
-  font-size:18px;
-  cursor:pointer;
-  color:#fff;
-  box-shadow: 0 14px 30px rgba(0,0,0,.35);
-  user-select:none;
-  min-width:160px;
+ border:0;
+ border-radius:999px;
+ padding:14px 26px;
+ font-weight:900;
+ font-size:18px;
+ cursor:pointer;
+ color:#fff;
+ min-width:160px;
 }
 
-.yes{ background: linear-gradient(180deg, var(--green), var(--green2)); }
-.no{ background: linear-gradient(180deg, var(--red), var(--red2)); }
+.yes{background:linear-gradient(180deg,var(--green),var(--green2));}
+.no{background:linear-gradient(180deg,var(--red),var(--red2));}
+
+/* PAGES */
+.page{display:none;width:100%}
+.page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+
+/* ENVELOPE */
+.envelope{
+ width:420px;
+ height:260px;
+ background:var(--envelope);
+ border-radius:20px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ cursor:pointer;
+ font-weight:bold;
+}
+
+/* LETTER */
+.letterCard{
+ width:min(900px,92vw);
+ background:rgba(0,0,0,.45);
+ border-radius:26px;
+ padding:26px;
+ text-align:left;
+}
+.typed{white-space:pre-wrap;font-size:18px}
+
+/* CONFETTI */
+#confetti{
+ position:fixed;
+ inset:0;
+ pointer-events:none;
+ z-index:5;
+}
 </style>
 </head>
 
 <body>
 
-<div id="page1">
-  <h1>Will you be my Valentine Quyen? 💘</h1>
-  <div id="noZone" class="btnRow">
-    <button id="yesBtn" class="btn yes">Yes 💖</button>
-    <button id="noBtn" class="btn no">No 🥺</button>
-  </div>
+<div id="collage"></div>
+<canvas id="confetti"></canvas>
+
+<div class="centerWrap">
+<div class="glass">
+
+<!-- PAGE 1 -->
+<div id="page1" class="page active">
+<h1>Will you be my Valentine Quyen? 💘</h1>
+
+<button id="soundBtn">Play music</button>
+
+<div id="noZone" class="btnRow">
+<button id="yesBtn" class="btn yes">Yes 💖</button>
+<button id="noBtn" class="btn no">No 🥺</button>
+</div>
 </div>
 
-<div id="page2" style="display:none;">
-  <h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
-  <div id="envelope">💌 CLICK ME</div>
+<!-- PAGE 2 -->
+<div id="page2" class="page">
+<h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
+<div id="envelope" class="envelope">CLICK ME 💌</div>
 </div>
 
-<div id="page3" style="display:none;">
-  <div id="typedText"></div>
+<!-- PAGE 3 -->
+<div id="page3" class="page">
+<div class="letterCard">
+<div class="typed" id="typedText"></div>
 </div>
+</div>
+
+</div>
+</div>
+
+<audio id="bgm" loop>
+<source src="song.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 
-/* -----------------------------
-   PAGE SWITCHING
-------------------------------*/
-const page1 = document.getElementById("page1");
-const page2 = document.getElementById("page2");
-const page3 = document.getElementById("page3");
-
-function showPage(n){
-  page1.style.display="none";
-  page2.style.display="none";
-  page3.style.display="none";
-  if(n===1) page1.style.display="block";
-  if(n===2) page2.style.display="block";
-  if(n===3) page3.style.display="block";
+/* COLLAGE */
+const collage=document.getElementById("collage");
+for(let i=1;i<=25;i++){
+ const tile=document.createElement("div");
+ tile.className="tile";
+ const img=document.createElement("img");
+ img.src=i+".jpg";
+ img.onerror=()=>tile.style.display="none";
+ tile.appendChild(img);
+ collage.appendChild(tile);
 }
 
-/* -----------------------------
-   YES BUTTON
-------------------------------*/
+/* AUDIO */
+const bgm=document.getElementById("bgm");
+const soundBtn=document.getElementById("soundBtn");
+soundBtn.addEventListener("click",()=>{
+ if(bgm.paused){bgm.play();soundBtn.textContent="Pause music";}
+ else{bgm.pause();soundBtn.textContent="Play music";}
+});
+
+/* PAGES */
+const page1=document.getElementById("page1");
+const page2=document.getElementById("page2");
+const page3=document.getElementById("page3");
+
+function showPage(n){
+ page1.classList.remove("active");
+ page2.classList.remove("active");
+ page3.classList.remove("active");
+ if(n===1)page1.classList.add("active");
+ if(n===2)page2.classList.add("active");
+ if(n===3)page3.classList.add("active");
+}
+
+/* YES */
 document.getElementById("yesBtn").addEventListener("click",()=>{
-  showPage(2);
+ spawnConfetti();
+ showPage(2);
 });
 
-/* -----------------------------
-   ENVELOPE
-------------------------------*/
+/* ENVELOPE */
 document.getElementById("envelope").addEventListener("click",()=>{
-  showPage(3);
-  typeLetter();
+ showPage(3);
+ typeLetter();
 });
 
-/* -----------------------------
-   LETTER TYPING
-------------------------------*/
-const letter = `I can't wait to spend the rest of my life with you pooks.
+/* LETTER */
+const letter=`I can't wait to spend the rest of my life with you pooks.
 
 You've given life a new purpose.
 You've given me something to smile about every day.
@@ -132,74 +255,114 @@ Signed,
 your tubby mans 💘`;
 
 function typeLetter(){
-  const el = document.getElementById("typedText");
-  el.textContent="";
-  let i=0;
-  function type(){
-    el.textContent = letter.slice(0,i);
-    i++;
-    if(i<=letter.length){
-      setTimeout(type,20);
-    }
-  }
-  type();
+ const el=document.getElementById("typedText");
+ el.textContent="";
+ let i=0;
+ function type(){
+  el.textContent=letter.slice(0,i);
+  i++;
+  if(i<=letter.length)setTimeout(type,20);
+ }
+ type();
 }
 
-/* ==================================================
-   FIXED NO BUTTON (NEVER FREEZES, RUNS FOREVER)
-================================================== */
+/* CONFETTI */
+const canvas=document.getElementById("confetti");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
-const noBtn  = document.getElementById("noBtn");
-const noZone = document.getElementById("noZone");
+let pieces=[];
+function spawnConfetti(){
+ pieces=[];
+ for(let i=0;i<200;i++){
+  pieces.push({
+   x:Math.random()*canvas.width,
+   y:-20,
+   vx:Math.random()*4-2,
+   vy:Math.random()*5+2,
+   size:8,
+   color:"hsl("+Math.random()*360+",90%,60%)"
+  });
+ }
+ requestAnimationFrame(updateConfetti);
+}
+
+function updateConfetti(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ pieces.forEach(p=>{
+  p.x+=p.vx;
+  p.y+=p.vy;
+  ctx.fillStyle=p.color;
+  ctx.fillRect(p.x,p.y,p.size,p.size);
+ });
+}
+
+/* ================================
+   NEW SLOWER NO BUTTON
+================================ */
+
+const noBtn=document.getElementById("noBtn");
+const noZone=document.getElementById("noZone");
 
 let armed=false;
 
 function arm(){
-  if(armed) return;
-
-  const rect=noBtn.getBoundingClientRect();
-  const zone=noZone.getBoundingClientRect();
-
-  noBtn.style.position="absolute";
-  noBtn.style.left=(rect.left-zone.left)+"px";
-  noBtn.style.top=(rect.top-zone.top)+"px";
-
-  armed=true;
+ if(armed)return;
+ const left=noBtn.offsetLeft;
+ const top=noBtn.offsetTop;
+ noBtn.style.position="absolute";
+ noBtn.style.left=left+"px";
+ noBtn.style.top=top+"px";
+ armed=true;
 }
 
-function moveButton(){
-  arm();
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
 
-  const zoneRect=noZone.getBoundingClientRect();
-  const btnRect=noBtn.getBoundingClientRect();
+function moveAway(mx,my){
+ arm();
+ const zoneRect=noZone.getBoundingClientRect();
+ const btnRect=noBtn.getBoundingClientRect();
 
-  const padding=10;
-  const maxX=zoneRect.width-btnRect.width-padding;
-  const maxY=zoneRect.height-btnRect.height-padding;
+ const relX=mx-zoneRect.left;
+ const relY=my-zoneRect.top;
 
-  const randomX=Math.random()*maxX+padding;
-  const randomY=Math.random()*maxY+padding;
+ const btnX=(btnRect.left-zoneRect.left)+btnRect.width/2;
+ const btnY=(btnRect.top-zoneRect.top)+btnRect.height/2;
 
-  noBtn.style.transition="left .18s ease-out, top .18s ease-out";
-  noBtn.style.left=randomX+"px";
-  noBtn.style.top=randomY+"px";
+ let dx=btnX-relX;
+ let dy=btnY-relY;
+
+ const len=Math.hypot(dx,dy)||1;
+ dx/=len;
+ dy/=len;
+
+ const dash=80;
+
+ let newX=btnX+dx*dash;
+ let newY=btnY+dy*dash;
+
+ const pad=10;
+
+ newX=clamp(newX,pad+btnRect.width/2,zoneRect.width-pad-btnRect.width/2);
+ newY=clamp(newY,pad+btnRect.height/2,zoneRect.height-pad-btnRect.height/2);
+
+ noBtn.style.transition="left .25s ease, top .25s ease";
+ noBtn.style.left=(newX-btnRect.width/2)+"px";
+ noBtn.style.top=(newY-btnRect.height/2)+"px";
 }
 
 noZone.addEventListener("pointermove",(e)=>{
-  const rect=noBtn.getBoundingClientRect();
-  const centerX=rect.left+rect.width/2;
-  const centerY=rect.top+rect.height/2;
-
-  const dist=Math.hypot(e.clientX-centerX,e.clientY-centerY);
-
-  if(dist<150){
-    moveButton();
-  }
+ const rect=noBtn.getBoundingClientRect();
+ const cx=rect.left+rect.width/2;
+ const cy=rect.top+rect.height/2;
+ const dist=Math.hypot(e.clientX-cx,e.clientY-cy);
+ if(dist<110)moveAway(e.clientX,e.clientY);
 });
 
 noBtn.addEventListener("pointerdown",(e)=>{
-  e.preventDefault();
-  moveButton();
+ e.preventDefault();
+ moveAway(e.clientX,e.clientY);
 });
 
 </script>
