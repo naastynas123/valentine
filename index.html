@@ -145,22 +145,13 @@ h1{
   justify-content:center;
   margin-top:10px;
 }
-  /* Make the button area an "arena" big enough to run around in */
+
+/* ✅ NO BUTTON ARENA (ONLY ONCE) */
 #noZone{
   position: relative;
   width: 100%;
-  min-height: 160px;     /* IMPORTANT: gives room to run */
-  padding: 18px 12px;    /* keeps it inside nicely */
-}
-
-#noBtn.runaway{
-  position: absolute;
-  z-index: 4;
-}
-
-#yesBtn{
-  position: relative;
-  z-index: 5;            /* always clickable */
+  min-height: 160px;      /* room to run */
+  padding: 18px 12px;
 }
 
 .btn{
@@ -181,11 +172,15 @@ h1{
 .yes{ background: linear-gradient(180deg, var(--green), var(--green2)); }
 .no{ background: linear-gradient(180deg, var(--red), var(--red2)); }
 
+/* ✅ Keep YES clickable, let NO move */
+#yesBtn{ position:relative; z-index:5; }
+#noBtn.runaway{ position:absolute; z-index:4; }
+
 /* pages */
 .page{ display:none; width:100%; }
 .page.active{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; }
 
-/* second screen envelope */
+/* envelope */
 .envelopeWrap{ margin-top:12px; display:flex; justify-content:center; align-items:center; }
 .envelope{
   width:min(520px, 82vw);
@@ -195,167 +190,39 @@ h1{
   user-select:none;
   filter: drop-shadow(0 18px 28px rgba(0,0,0,.45));
 }
-.env-body{
-  position:absolute;
-  inset:40px 0 0 0;
-  border-radius:22px;
-  background: var(--envelope);
-  overflow:hidden;
-}
-.env-body:before{
-  content:"";
-  position:absolute; inset:0;
-  background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.06));
-  pointer-events:none;
-}
-.env-flap{
-  position:absolute;
-  left:0; right:0; top:40px;
-  height:160px;
-  transform-origin: top center;
-  transform: rotateX(0deg);
-  transition: transform .55s cubic-bezier(.2,.8,.2,1);
-  z-index:4;
-}
-.env-flap:before{
-  content:"";
-  position:absolute;
-  left:0; right:0; top:0; bottom:0;
-  background: var(--envelope-dark);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  border-top-left-radius:22px;
-  border-top-right-radius:22px;
-}
-.seal{
-  position:absolute;
-  top:118px;
-  left:50%;
-  transform: translateX(-50%);
-  width:64px; height:64px;
-  border-radius:999px;
-  background: var(--seal);
-  display:grid;
-  place-items:center;
-  z-index:6;
-  box-shadow: 0 10px 18px rgba(0,0,0,.25);
-  border: 4px solid rgba(255,255,255,.25);
-  transition: transform .55s cubic-bezier(.2,.8,.2,1);
-}
+.env-body{ position:absolute; inset:40px 0 0 0; border-radius:22px; background: var(--envelope); overflow:hidden; }
+.env-body:before{ content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.06)); pointer-events:none; }
+.env-flap{ position:absolute; left:0; right:0; top:40px; height:160px; transform-origin: top center; transform: rotateX(0deg); transition: transform .55s cubic-bezier(.2,.8,.2,1); z-index:4; }
+.env-flap:before{ content:""; position:absolute; left:0; right:0; top:0; bottom:0; background: var(--envelope-dark); clip-path: polygon(0 0, 100% 0, 50% 100%); border-top-left-radius:22px; border-top-right-radius:22px; }
+.seal{ position:absolute; top:118px; left:50%; transform: translateX(-50%); width:64px; height:64px; border-radius:999px; background: var(--seal); display:grid; place-items:center; z-index:6; box-shadow: 0 10px 18px rgba(0,0,0,.25); border: 4px solid rgba(255,255,255,.25); transition: transform .55s cubic-bezier(.2,.8,.2,1); }
 .seal span{ font-size:22px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
-.clickMeTag{
-  position:absolute;
-  left:50%;
-  top:210px;
-  transform: translateX(-50%);
-  z-index:7;
-  padding:10px 18px;
-  border-radius:999px;
-  background: rgba(255,255,255,.85);
-  color:#0c1a33;
-  font-weight:900;
-  letter-spacing:.5px;
-  box-shadow: 0 12px 18px rgba(0,0,0,.22);
-}
-.paper{
-  position:absolute;
-  left:22px;
-  right:22px;
-  top:86px;
-  height:230px;
-  background: var(--paper);
-  border-radius:16px;
-  z-index:2;
-  transform: translateY(130px);
-  transition: transform .55s cubic-bezier(.2,.8,.2,1);
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
-  overflow:hidden;
-}
-.paper:before{
-  content:"";
-  position:absolute; inset:0;
-  background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,0) 40%);
-  pointer-events:none;
-}
+.clickMeTag{ position:absolute; left:50%; top:210px; transform: translateX(-50%); z-index:7; padding:10px 18px; border-radius:999px; background: rgba(255,255,255,.85); color:#0c1a33; font-weight:900; letter-spacing:.5px; box-shadow: 0 12px 18px rgba(0,0,0,.22); }
+.paper{ position:absolute; left:22px; right:22px; top:86px; height:230px; background: var(--paper); border-radius:16px; z-index:2; transform: translateY(130px); transition: transform .55s cubic-bezier(.2,.8,.2,1); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); overflow:hidden; }
+.paper:before{ content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,0) 40%); pointer-events:none; }
 .envelope:hover .paper{ transform: translateY(-10px); }
 .envelope:hover .env-flap{ transform: rotateX(165deg); }
 .envelope:hover .seal{ transform: translateX(-50%) translateY(-10px) scale(.95); }
 
-/* typed letter */
-.letterCard{
-  width:min(900px, 92vw);
-  background: rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:26px;
-  padding:26px 22px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 22px 50px rgba(0,0,0,.55);
-  text-align:left;
-  line-height:1.5;
-}
-.letterTitle{
-  margin:0 0 10px 0;
-  font-size:22px;
-  font-weight:900;
-  letter-spacing:.3px;
-}
-.typed{
-  font-size:18px;
-  white-space:pre-wrap;
-}
-.cursor{
-  display:inline-block;
-  width:10px;
-  margin-left:2px;
-  background:#fff;
-  animation: blink 1s infinite;
-  vertical-align:baseline;
-}
-@keyframes blink{
-  0%,49%{ opacity:1 }
-  50%,100%{ opacity:0 }
-}
+/* typed */
+.letterCard{ width:min(900px, 92vw); background: rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18); border-radius:26px; padding:26px 22px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 22px 50px rgba(0,0,0,.55); text-align:left; line-height:1.5; }
+.letterTitle{ margin:0 0 10px 0; font-size:22px; font-weight:900; letter-spacing:.3px; }
+.typed{ font-size:18px; white-space:pre-wrap; }
+.cursor{ display:inline-block; width:10px; margin-left:2px; background:#fff; animation: blink 1s infinite; vertical-align:baseline; }
+@keyframes blink{ 0%,49%{ opacity:1 } 50%,100%{ opacity:0 } }
 
-/* confetti canvas */
-#confetti{
-  position:fixed; inset:0;
-  pointer-events:none;
-  z-index:5;
-}
+/* confetti */
+#confetti{ position:fixed; inset:0; pointer-events:none; z-index:5; }
 
 /* shade */
-.shade{
-  position:fixed; inset:0;
-  background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55));
-  z-index:1;
-  pointer-events:none;
-}
-
-/* ✅ NO BUTTON GAME ANCHORS */
-#noZone{
-  position: relative;     /* anchor for absolute No */
-  min-height: 90px;       /* room to move */
-}
-#yesBtn{
-  position: relative;
-  z-index: 5;             /* always clickable */
-}
-#noBtn.runaway{
-  position: absolute;
-  z-index: 4;
-}
+.shade{ position:fixed; inset:0; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55)); z-index:1; pointer-events:none; }
 </style>
 </head>
 
 <body>
-<!-- BACKGROUND COLLAGE -->
 <div id="collage" aria-hidden="true"></div>
 <div class="shade" aria-hidden="true"></div>
-
-<!-- CONFETTI -->
 <canvas id="confetti"></canvas>
 
-<!-- AUDIO -->
 <audio id="bgm" preload="auto" loop playsinline>
   <source src="song.mp3" type="audio/mpeg">
 </audio>
@@ -363,7 +230,6 @@ h1{
 <div class="centerWrap">
   <div class="glass">
 
-    <!-- PAGE 1 -->
     <div id="page1" class="page active">
       <h1>Will you be my Valentine Quyen? 💘</h1>
 
@@ -378,7 +244,6 @@ h1{
       </div>
     </div>
 
-    <!-- PAGE 2 -->
     <div id="page2" class="page">
       <h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
       <div class="envelopeWrap">
@@ -392,7 +257,6 @@ h1{
       </div>
     </div>
 
-    <!-- PAGE 3 -->
     <div id="page3" class="page">
       <div class="letterCard">
         <div class="letterTitle">💌</div>
@@ -404,33 +268,26 @@ h1{
 </div>
 
 <script>
-/* -----------------------------
-   COLLAGE (1.jpg .. 25.jpg in root)
-------------------------------*/
+// COLLAGE
 const COLLAGE_COUNT = 25;
 const collage = document.getElementById("collage");
 for(let i=1;i<=COLLAGE_COUNT;i++){
   const tile = document.createElement("div");
   tile.className = "tile";
-
   const img = document.createElement("img");
   img.alt = `photo ${i}`;
   img.loading = "lazy";
   img.src = `${i}.jpg`;
   img.onerror = () => tile.style.display = "none";
-
   tile.appendChild(img);
   collage.appendChild(tile);
 }
 
-/* -----------------------------
-   AUDIO (toggle)
-------------------------------*/
+// AUDIO
 const bgm = document.getElementById("bgm");
 const soundBtn = document.getElementById("soundBtn");
 const audioDot = document.getElementById("audioDot");
 const soundText = document.getElementById("soundText");
-
 function setAudioUI(playing){
   if(playing){
     audioDot.classList.add("on");
@@ -441,31 +298,18 @@ function setAudioUI(playing){
   }
 }
 async function playMusic(){
-  try{
-    bgm.muted = false;
-    bgm.volume = 0.8;
-    await bgm.play();
-    setAudioUI(true);
-  }catch(e){
-    setAudioUI(false);
-    console.error(e);
-  }
+  try{ bgm.muted=false; bgm.volume=0.8; await bgm.play(); setAudioUI(true); }
+  catch(e){ setAudioUI(false); console.error(e); }
 }
-function pauseMusic(){
-  bgm.pause();
-  setAudioUI(false);
-}
+function pauseMusic(){ bgm.pause(); setAudioUI(false); }
 bgm.addEventListener("play",()=>setAudioUI(true));
 bgm.addEventListener("pause",()=>setAudioUI(false));
 soundBtn.addEventListener("click",()=>{ if(bgm.paused) playMusic(); else pauseMusic(); });
 
-/* -----------------------------
-   PAGES
-------------------------------*/
+// PAGES
 const page1 = document.getElementById("page1");
 const page2 = document.getElementById("page2");
 const page3 = document.getElementById("page3");
-
 function showPage(n){
   [page1,page2,page3].forEach(p=>p.classList.remove("active"));
   if(n===1) page1.classList.add("active");
@@ -473,22 +317,14 @@ function showPage(n){
   if(n===3) page3.classList.add("active");
 }
 
-/* -----------------------------
-   CONFETTI
-------------------------------*/
+// CONFETTI
 const confettiCanvas = document.getElementById("confetti");
 const ctx = confettiCanvas.getContext("2d");
-
-function resizeConfetti(){
-  confettiCanvas.width = window.innerWidth;
-  confettiCanvas.height = window.innerHeight;
-}
+function resizeConfetti(){ confettiCanvas.width = window.innerWidth; confettiCanvas.height = window.innerHeight; }
 window.addEventListener("resize", resizeConfetti);
 resizeConfetti();
-
 let confettiPieces = [];
 let confettiOn = false;
-
 function spawnConfetti() {
   confettiPieces = [];
   const count = 220;
@@ -510,7 +346,6 @@ function spawnConfetti() {
   requestAnimationFrame(drawConfetti);
   setTimeout(()=> confettiOn=false, 4200);
 }
-
 function drawConfetti(){
   ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
   for (const p of confettiPieces){
@@ -518,7 +353,6 @@ function drawConfetti(){
     p.y += p.vy;
     p.r += p.vr;
     p.vy += 0.03;
-
     ctx.save();
     ctx.globalAlpha = p.a;
     ctx.translate(p.x, p.y);
@@ -528,27 +362,20 @@ function drawConfetti(){
     ctx.restore();
   }
   confettiPieces = confettiPieces.filter(p => p.y < confettiCanvas.height + 40);
-  if (confettiOn || confettiPieces.length){
-    requestAnimationFrame(drawConfetti);
-  }
+  if (confettiOn || confettiPieces.length) requestAnimationFrame(drawConfetti);
 }
 
-/* -----------------------------
-   YES -> page2 (never fails)
-------------------------------*/
+// YES
 document.getElementById("yesBtn").addEventListener("click", ()=>{
   showPage(2);
   window.scrollTo(0,0);
   spawnConfetti();
 });
 
-/* -----------------------------
-   Envelope -> page3 + typing
-------------------------------*/
+// ENVELOPE + TYPING
 const envelope = document.getElementById("envelope");
 const typedText = document.getElementById("typedText");
 const cursor = document.getElementById("cursor");
-
 const letter =
 `I can't wait to spend the rest of my life with you pooks.
 
@@ -564,72 +391,46 @@ but I know with you by my side, everything will be going right.
 
 Signed,
 your tubby mans 💘`;
-
 let typingStarted = false;
-
 function typeIt(text, speed=22){
   typedText.textContent = "";
   cursor.style.display = "inline-block";
   let i = 0;
-
   function tick(){
     typedText.textContent = text.slice(0, i);
     i++;
-    if (i <= text.length){
-      setTimeout(tick, speed);
-    } else {
-      cursor.style.display = "none";
-    }
+    if (i <= text.length) setTimeout(tick, speed);
+    else cursor.style.display = "none";
   }
   tick();
 }
-
 envelope.addEventListener("click", ()=>{
   showPage(3);
-  if(!typingStarted){
-    typingStarted = true;
-    typeIt(letter, 18);
-  }
+  if(!typingStarted){ typingStarted = true; typeIt(letter, 18); }
 });
 
-/* -----------------------------
-   NO BUTTON (REWRITTEN GAME LOGIC)
-   Goal: never catchable + keeps moving while you chase.
-------------------------------*/
-// NO BUTTON (smooth runaway game)
+// ✅ NO BUTTON (ONLY ONE SYSTEM)
 const noBtn  = document.getElementById("noBtn");
 const noZone = document.getElementById("noZone");
 const yesBtn = document.getElementById("yesBtn");
 
 let armed = false;
-
-// button position (relative to noZone)
-let x = 0, y = 0;
-let vx = 0, vy = 0;
-
-// pointer
+let x = 0, y = 0, vx = 0, vy = 0;
 let mx = 0, my = 0;
 let inside = false;
 
-// tune these
-const SPEED = 7.5;        // how fast it runs
-const PANIC_DIST = 160;   // starts fleeing when you get close
-const FRICTION = 0.86;    // smoothness
+const SPEED = 9.0;
+const PANIC_DIST = 190;
+const FRICTION = 0.86;
 
-function arm(){
+function armNo(){
   if (armed) return;
-
-  // lock where it currently sits, then make it absolute
   const left = noBtn.offsetLeft;
   const top  = noBtn.offsetTop;
-
   noBtn.classList.add("runaway");
-  x = left;
-  y = top;
-
+  x = left; y = top;
   noBtn.style.left = x + "px";
   noBtn.style.top  = y + "px";
-
   armed = true;
 }
 
@@ -638,163 +439,86 @@ function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 function getBounds(){
   const z = noZone.getBoundingClientRect();
   const b = noBtn.getBoundingClientRect();
-  return {
-    w: z.width,
-    h: z.height,
-    bw: b.width,
-    bh: b.height
-  };
+  return { w:z.width, h:z.height, bw:b.width, bh:b.height, zone:z, btn:b };
 }
 
-function tick(){
-  if (!armed || !inside){
-    requestAnimationFrame(tick);
-    return;
-  }
-
-  const { w, h, bw, bh } = getBounds();
-
-  // button center in zone coords
-  const cx = x + bw/2;
-  const cy = y + bh/2;
-
-  // vector away from mouse (mouse coords are already zone-relative below)
-  let dx = cx - mx;
-  let dy = cy - my;
-  const dist = Math.hypot(dx, dy) || 1;
-
-  // If close: run away strongly. If not close: still drift so it never "stops".
-  let ax = 0, ay = 0;
-
-  if (dist < PANIC_DIST){
-    dx /= dist; dy /= dist;
-    ax = dx * SPEED;
-    ay = dy * SPEED;
-  } else {
-    // gentle wandering so it doesn't freeze far away
-    ax = (Math.random() - 0.5) * 0.35;
-    ay = (Math.random() - 0.5) * 0.35;
-  }
-
-  vx = (vx + ax) * FRICTION;
-  vy = (vy + ay) * FRICTION;
-
-  x += vx;
-  y += vy;
-
-  // keep inside zone
-  const pad = 8;
-  const minX = pad;
-  const minY = pad;
-  const maxX = Math.max(minX, w - bw - pad);
-  const maxY = Math.max(minY, h - bh - pad);
-
-  // bounce off walls
-  if (x <= minX){ x = minX; vx *= -0.9; }
-  if (x >= maxX){ x = maxX; vx *= -0.9; }
-  if (y <= minY){ y = minY; vy *= -0.9; }
-  if (y >= maxY){ y = maxY; vy *= -0.9; }
-
-  // never sit on top of YES
-  const yes = yesBtn.getBoundingClientRect();
-  const zone = noZone.getBoundingClientRect();
-  const btnRect = {
-    left: zone.left + x, top: zone.top + y,
-    right: zone.left + x + bw, bottom: zone.top + y + bh
-  };
-  const overlap =
-    !(btnRect.right < yes.left || btnRect.left > yes.right || btnRect.bottom < yes.top || btnRect.top > yes.bottom);
-
-  if (overlap){
-    // push away from YES
-    x = clamp(x + (Math.random() < 0.5 ? -60 : 60), minX, maxX);
-    y = clamp(y + (Math.random() < 0.5 ? -50 : 50), minY, maxY);
-  }
-
-  noBtn.style.left = x + "px";
-  noBtn.style.top  = y + "px";
-
-  requestAnimationFrame(tick);
+function rectOverlap(a,b){
+  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
 }
 
-// pointer coords in zone space
-noZone.addEventListener("pointerenter", () => { inside = true; arm(); });
-noZone.addEventListener("pointerleave", () => { inside = false; });
-noZone.addEventListener("pointermove", (e) => {
+function runawayLoop(){
+  if(inside) armNo();
+
+  if(armed && inside){
+    const { w, h, bw, bh, zone } = getBounds();
+
+    const cx = x + bw/2;
+    const cy = y + bh/2;
+
+    let dx = cx - mx;
+    let dy = cy - my;
+    const dist = Math.hypot(dx, dy) || 1;
+
+    let ax = 0, ay = 0;
+    if(dist < PANIC_DIST){
+      dx /= dist; dy /= dist;
+      ax = dx * SPEED;
+      ay = dy * SPEED;
+    }else{
+      ax = (Math.random()-0.5) * 0.25;
+      ay = (Math.random()-0.5) * 0.25;
+    }
+
+    vx = (vx + ax) * FRICTION;
+    vy = (vy + ay) * FRICTION;
+
+    x += vx;
+    y += vy;
+
+    const pad = 8;
+    const minX = pad;
+    const minY = pad;
+    const maxX = Math.max(minX, w - bw - pad);
+    const maxY = Math.max(minY, h - bh - pad);
+
+    if (x <= minX){ x=minX; vx*=-0.9; }
+    if (x >= maxX){ x=maxX; vx*=-0.9; }
+    if (y <= minY){ y=minY; vy*=-0.9; }
+    if (y >= maxY){ y=maxY; vy*=-0.9; }
+
+    // avoid overlapping YES
+    const yes = yesBtn.getBoundingClientRect();
+    const cand = {
+      left: zone.left + x, top: zone.top + y,
+      right: zone.left + x + bw, bottom: zone.top + y + bh
+    };
+    if(rectOverlap(cand, yes)){
+      x = clamp(x + (Math.random()<0.5?-80:80), minX, maxX);
+      y = clamp(y + (Math.random()<0.5?-60:60), minY, maxY);
+    }
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top  = y + "px";
+  }
+
+  requestAnimationFrame(runawayLoop);
+}
+
+noZone.addEventListener("pointerenter", ()=>{ inside = true; });
+noZone.addEventListener("pointerleave", ()=>{ inside = false; });
+noZone.addEventListener("pointermove", (e)=>{
   const r = noZone.getBoundingClientRect();
   mx = e.clientX - r.left;
   my = e.clientY - r.top;
 });
-
-// if you try click it, it instantly jumps away
-noBtn.addEventListener("pointerdown", (e) => {
-  e.preventDefault();
-  arm();
-  vx += (Math.random()<0.5?-1:1)*SPEED*2.2;
-  vy += (Math.random()<0.5?-1:1)*SPEED*1.8;
-});
-
-requestAnimationFrame(tick);
-
-
-// main game loop: while you’re chasing, it keeps moving
-function tick(){
-  if(!rafRunning) return;
-
-  const now = performance.now();
-
-  // if cursor hasn't moved recently, don't spam teleports
-  const activelyChasing = pointerInsideZone && (now - lastPointerMove < 250);
-
-  if (activelyChasing){
-    const b = noBtn.getBoundingClientRect();
-    const cx = b.left + b.width/2;
-    const cy = b.top  + b.height/2;
-
-    const dist = Math.hypot(px - cx, py - cy);
-
-    // move when close OR just to keep it “alive” while chasing
-    const shouldJump =
-      (dist < 220 && now - lastJump > 35) ||   // dodge when near
-      (now - lastJump > 260);                  // keep moving even if you aren’t close yet
-
-    if (shouldJump){
-      lastJump = now;
-      teleportNo();
-    }
-  }
-
-  requestAnimationFrame(tick);
-}
-
-// Track pointer globally
-document.addEventListener("pointermove", (e)=>{
-  px = e.clientX;
-  py = e.clientY;
-  lastPointerMove = performance.now();
-});
-
-// Know when pointer is inside the zone
-noZone.addEventListener("pointerenter", ()=>{
-  pointerInsideZone = true;
-  if(!rafRunning){
-    rafRunning = true;
-    requestAnimationFrame(tick);
-  }
-});
-noZone.addEventListener("pointerleave", ()=>{
-  pointerInsideZone = false;
-});
-
-// If they somehow click/tap it, escape instantly
 noBtn.addEventListener("pointerdown", (e)=>{
   e.preventDefault();
-  px = e.clientX;
-  py = e.clientY;
-  lastPointerMove = performance.now();
-  teleportNo();
+  armNo();
+  vx += (Math.random()<0.5?-1:1) * SPEED * 2.2;
+  vy += (Math.random()<0.5?-1:1) * SPEED * 1.8;
 });
+
+requestAnimationFrame(runawayLoop);
 </script>
 </body>
 </html>
-
