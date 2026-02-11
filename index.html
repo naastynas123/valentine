@@ -1,720 +1,179 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Valentine 💘</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Valentine 💘</title>
 
-  <style>
-    :root{
-      --glass: rgba(20,20,20,.45);
-      --glass-border: rgba(255,255,255,.18);
-      --text: #fff;
+<style>
+:root{
+  --glass: rgba(20,20,20,.45);
+  --glass-border: rgba(255,255,255,.18);
+  --text:#fff;
+  --green:#46c26f;
+  --green2:#2fb85c;
+  --red:#f04a4a;
+  --red2:#e23c3c;
+}
 
-      --green: #46c26f;
-      --green2:#2fb85c;
-      --red: #f04a4a;
-      --red2:#e23c3c;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#000;
+  color:white;
+  overflow:hidden;
+}
 
-      --envelope:#9fc7ff;   /* baby blue */
-      --envelope-dark:#86b4ff;
-      --paper:#ffffff;
-      --seal:#ff5a7a;
-    }
+/* Center Card */
+.centerWrap{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text);
-      overflow:hidden;
-      background:#000;
-    }
+.glass{
+  width:min(900px,95vw);
+  min-height:500px;
+  border-radius:28px;
+  padding:40px;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(16px);
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+}
 
-    /* ---- collage background ---- */
-    #collage{
-      position:fixed; inset:0;
-      display:grid;
-      grid-template-columns: repeat(6, 1fr);
-      grid-auto-rows: 160px;
-      gap:14px;
-      padding:18px;
-      filter: saturate(1.05);
-      transform: scale(1.04);
-      z-index:0;
-    }
+h1{
+  font-size: clamp(34px, 5vw, 60px);
+  margin:0;
+}
 
-    @media (max-width: 1100px){
-      #collage{ grid-template-columns: repeat(4, 1fr); grid-auto-rows: 150px; }
-    }
-    @media (max-width: 700px){
-      #collage{ grid-template-columns: repeat(3, 1fr); grid-auto-rows: 135px; }
-    }
+/* Buttons Area */
+#noZone{
+  position:relative;
+  width:100%;
+  max-width:600px;
+  height:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+}
 
-    .tile{
-      border-radius:22px;
-      overflow:hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,.55);
-      position:relative;
-      background:#111;
-    }
-    .tile img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      transform: scale(1.02);
-    }
-    /* soft vignette */
-    .tile:after{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(circle at center, rgba(0,0,0,0) 40%, rgba(0,0,0,.45) 100%);
-      pointer-events:none;
-    }
+.btn{
+  border:0;
+  border-radius:999px;
+  padding:16px 30px;
+  font-weight:900;
+  font-size:20px;
+  cursor:pointer;
+  color:white;
+  transition:transform .15s ease;
+}
 
-    /* ---- main glass card ---- */
-    .centerWrap{
-      position:fixed; inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
-      z-index:2;
-    }
-    .glass{
-      width:min(1050px, 95vw);
-      min-height: min(560px, 86vh);
-      border-radius:28px;
-      padding:34px 26px;
-      background: var(--glass);
-      border:1px solid var(--glass-border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 30px 70px rgba(0,0,0,.6);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      gap:18px;
-    }
+.btn:active{transform:scale(.95)}
 
-    h1{
-      margin:0;
-      font-size: clamp(34px, 5vw, 62px);
-      letter-spacing:.5px;
-      text-shadow: 0 12px 24px rgba(0,0,0,.55);
-      line-height:1.05;
-    }
+.yes{
+  background:linear-gradient(180deg,var(--green),var(--green2));
+}
 
-    /* audio button */
-    .audioBtn{
-      border:0;
-      border-radius:999px;
-      padding:12px 18px;
-      font-weight:800;
-      font-size:15px;
-      cursor:pointer;
-      background: rgba(255,255,255,.14);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.22);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 18px rgba(0,0,0,.28);
-      transition: transform .12s ease, background .2s ease;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      user-select:none;
-    }
-    .audioBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.18); }
-    .audioBtn:active{ transform: translateY(1px) scale(.99); }
-    .audioDot{
-      width:10px; height:10px; border-radius:999px;
-      background:#ff4d6d;
-      box-shadow: 0 0 0 5px rgba(255,77,109,.18);
-    }
-    .audioDot.on{ background:#38d26a; box-shadow: 0 0 0 5px rgba(56,210,106,.18); }
-
-    /* buttons */
-    .btnRow{
-      display:flex;
-      gap:16px;
-      flex-wrap:wrap;
-      justify-content:center;
-      margin-top:10px;
-    }
-    .btn{
-      border:0;
-      border-radius:999px;
-      padding:14px 26px;
-      font-weight:900;
-      font-size:18px;
-      cursor:pointer;
-      color:#fff;
-      box-shadow: 0 14px 30px rgba(0,0,0,.35);
-      transition: transform .12s ease, filter .2s ease;
-      user-select:none;
-      min-width: 160px;
-    }
-    .btn:hover{ transform: translateY(-2px); filter: brightness(1.03); }
-    .btn:active{ transform: translateY(1px) scale(.99); }
-    .yes{ background: linear-gradient(180deg, var(--green), var(--green2)); }
-    .no{ background: linear-gradient(180deg, var(--red), var(--red2)); position:relative; }
-
-    /* "No" runaway-ish */
-    .no.runaway{
-      position:absolute;
-    }
-
-    /* page container */
-    .page{ display:none; width:100%; }
-    .page.active{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; }
-
-    /* second screen envelope */
-    .envelopeWrap{
-      margin-top:12px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-
-    .envelope{
-      width:min(520px, 82vw);
-      height:320px;
-      position:relative;
-      cursor:pointer;
-      user-select:none;
-      filter: drop-shadow(0 18px 28px rgba(0,0,0,.45));
-    }
-
-    /* envelope body */
-    .env-body{
-      position:absolute;
-      inset:40px 0 0 0;
-      border-radius:22px;
-      background: var(--envelope);
-      overflow:hidden;
-    }
-    /* inner shading */
-    .env-body:before{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.06));
-      pointer-events:none;
-    }
-
-    /* flap */
-    .env-flap{
-      position:absolute;
-      left:0; right:0; top:40px;
-      height:160px;
-      transform-origin: top center;
-      transform: rotateX(0deg);
-      transition: transform .55s cubic-bezier(.2,.8,.2,1);
-      z-index:4;
-    }
-    .env-flap:before{
-      content:"";
-      position:absolute;
-      left:0; right:0; top:0; bottom:0;
-      background: var(--envelope-dark);
-      clip-path: polygon(0 0, 100% 0, 50% 100%);
-      border-top-left-radius:22px;
-      border-top-right-radius:22px;
-    }
-
-    /* seal */
-    .seal{
-      position:absolute;
-      top:118px;
-      left:50%;
-      transform: translateX(-50%);
-      width:64px; height:64px;
-      border-radius:999px;
-      background: var(--seal);
-      display:grid;
-      place-items:center;
-      z-index:6;
-      box-shadow: 0 10px 18px rgba(0,0,0,.25);
-      border: 4px solid rgba(255,255,255,.25);
-      transition: transform .55s cubic-bezier(.2,.8,.2,1);
-    }
-    .seal span{
-      font-size:22px;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.25));
-    }
-
-    /* click me tag */
-    .clickMeTag{
-      position:absolute;
-      left:50%;
-      top:210px;
-      transform: translateX(-50%);
-      z-index:7;
-      padding:10px 18px;
-      border-radius:999px;
-      background: rgba(255,255,255,.85);
-      color:#0c1a33;
-      font-weight:900;
-      letter-spacing:.5px;
-      box-shadow: 0 12px 18px rgba(0,0,0,.22);
-    }
-
-    /* paper (hidden inside when NOT hovered) */
-    .paper{
-      position:absolute;
-      left:22px;
-      right:22px;
-      top:86px;
-      height:230px;
-      background: var(--paper);
-      border-radius:16px;
-      z-index:2;
-      transform: translateY(130px); /* tucked inside */
-      transition: transform .55s cubic-bezier(.2,.8,.2,1);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
-      overflow:hidden;
-    }
-    .paper:before{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,0) 40%);
-      pointer-events:none;
-    }
-
-    /* hover open */
-    .envelope:hover .paper{ transform: translateY(-10px); }
-    .envelope:hover .env-flap{ transform: rotateX(165deg); }
-    .envelope:hover .seal{ transform: translateX(-50%) translateY(-10px) scale(.95); }
-
-    /* typed letter */
-    .letterCard{
-      width:min(900px, 92vw);
-      background: rgba(0,0,0,.45);
-      border:1px solid rgba(255,255,255,.18);
-      border-radius:26px;
-      padding:26px 22px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 22px 50px rgba(0,0,0,.55);
-      text-align:left;
-      line-height:1.5;
-    }
-    .letterTitle{
-      margin:0 0 10px 0;
-      font-size:22px;
-      font-weight:900;
-      letter-spacing:.3px;
-    }
-    .typed{
-      font-size:18px;
-      white-space:pre-wrap;
-    }
-    .cursor{
-      display:inline-block;
-      width:10px;
-      margin-left:2px;
-      background:#fff;
-      animation: blink 1s infinite;
-      vertical-align:baseline;
-    }
-    @keyframes blink{
-      0%,49%{ opacity:1 }
-      50%,100%{ opacity:0 }
-    }
-
-    /* confetti canvas */
-    #confetti{
-      position:fixed; inset:0;
-      pointer-events:none;
-      z-index:5;
-    }
-
-    /* slightly lighter overall */
-    .shade{
-      position:fixed; inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55));
-      z-index:1;
-      pointer-events:none;
-    }
-  </style>
+.no{
+  background:linear-gradient(180deg,var(--red),var(--red2));
+  position:relative;
+}
+</style>
 </head>
 
 <body>
-  <!-- BACKGROUND COLLAGE -->
-  <div id="collage" aria-hidden="true"></div>
-  <div class="shade" aria-hidden="true"></div>
 
-  <!-- CONFETTI -->
-  <canvas id="confetti"></canvas>
+<div class="centerWrap">
+  <div class="glass">
 
-  <!-- AUDIO -->
-  <audio id="bgm" preload="auto" loop playsinline>
-    <source src="song.mp3" type="audio/mpeg">
-  </audio>
+    <h1>Will you be my Valentine Quyen? 💘</h1>
 
-  <div class="centerWrap">
-    <div class="glass">
-
-      <!-- PAGE 1 -->
-      <div id="page1" class="page active">
-        <h1>Will you be my Valentine Quyen? 💘</h1>
-
-        <!-- audio button (first thing she sees) -->
-        <button id="soundBtn" class="audioBtn" type="button">
-          <span id="audioDot" class="audioDot"></span>
-          <span id="soundText">Play music</span>
-        </button>
-
-     <div id="noZone" class="btnRow" style="position:relative;">
-  <button id="yesBtn" class="btn yes" type="button">Yes 💖</button>
-  <button id="noBtn" class="btn no" type="button">No 🥺</button>
-</div>
-   
-
-
-
-      <!-- PAGE 2 -->
-      <div id="page2" class="page">
-        <h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
-
-        <div class="envelopeWrap">
-          <div id="envelope" class="envelope" role="button" aria-label="Open letter">
-            <div class="paper"></div>
-            <div class="env-body"></div>
-            <div class="env-flap"></div>
-            <div class="seal"><span>♥</span></div>
-            <div class="clickMeTag">CLICK ME</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE 3 -->
-      <div id="page3" class="page">
-        <div class="letterCard">
-          <div class="letterTitle">💌</div>
-          <div class="typed"><span id="typedText"></span><span id="cursor" class="cursor">&nbsp;</span></div>
-        </div>
-      </div>
-
+    <div id="noZone">
+      <button id="yesBtn" class="btn yes">Yes 💖</button>
+      <button id="noBtn" class="btn no">No 🥺</button>
     </div>
+
   </div>
+</div>
 
-  <script>
-    /* -----------------------------
-       COLLAGE (loads 1.jpg ... 25.jpg from ROOT)
-       Your images are 1.jpg .. 25.jpg in the same folder as this HTML.
-    ------------------------------*/
-    const COLLAGE_COUNT = 25;
+<script>
 
-    function makeCollage() {
-      const collage = document.getElementById("collage");
-      collage.innerHTML = "";
+/* =========================
+   RUNAWAY NO BUTTON (MASTER FIXED)
+========================= */
 
-      for (let i = 1; i <= COLLAGE_COUNT; i++) {
-        const tile = document.createElement("div");
-        tile.className = "tile";
-
-        const img = document.createElement("img");
-        img.alt = `photo ${i}`;
-        img.loading = "lazy";
-
-        // ✅ ROOT images
-        img.src = `${i}.jpg`;
-
-        // if an image missing, hide tile
-        img.onerror = () => tile.style.display = "none";
-
-        tile.appendChild(img);
-        collage.appendChild(tile);
-      }
-    }
-    makeCollage();
-
-    /* -----------------------------
-       AUDIO (toggle play/pause)
-    ------------------------------*/
-    const bgm = document.getElementById("bgm");
-    const soundBtn = document.getElementById("soundBtn");
-    const audioDot = document.getElementById("audioDot");
-    const soundText = document.getElementById("soundText");
-
-    function setAudioUI(playing){
-      if (playing){
-        audioDot.classList.add("on");
-        soundText.textContent = "Music playing (click to pause)";
-      } else {
-        audioDot.classList.remove("on");
-        soundText.textContent = "Play music";
-      }
-    }
-
-    async function playMusic(){
-      try {
-        bgm.muted = false;
-        bgm.volume = 0.8;
-        await bgm.play();              // ✅ must be triggered by user click
-        setAudioUI(true);
-      } catch (e) {
-        setAudioUI(false);
-        console.error("Audio blocked or failed. Check song.mp3 is next to index.html", e);
-      }
-    }
-
-    function pauseMusic(){
-      bgm.pause();
-      setAudioUI(false);
-    }
-
-    // Sync UI if audio stops/starts for any reason
-    bgm.addEventListener("play", () => setAudioUI(true));
-    bgm.addEventListener("pause", () => setAudioUI(false));
-
-    // Button toggles play/pause
-    soundBtn.addEventListener("click", () => {
-      if (bgm.paused) playMusic();
-      else pauseMusic();
-    });
-
-    // optional: attempt once on load (usually blocked, but harmless)
-    setAudioUI(false);
-
-    /* -----------------------------
-       PAGES
-    ------------------------------*/
-    const page1 = document.getElementById("page1");
-    const page2 = document.getElementById("page2");
-    const page3 = document.getElementById("page3");
-
-    function showPage(n){
-      [page1, page2, page3].forEach(p => p.classList.remove("active"));
-      if (n===1) page1.classList.add("active");
-      if (n===2) page2.classList.add("active");
-      if (n===3) page3.classList.add("active");
-    }
-
-/* -----------------------------
-   NO button dodges cursor (UN-CATCHABLE)
-   Replace your whole NO section with this
-------------------------------*/
-/* -----------------------------
-   NO button dodges cursor (continuous chase)
-------------------------------*/
-/* -----------------------------
-   NO button dodges cursor (WORKING VERSION)
-------------------------------*/
-const noBtn  = document.getElementById('noBtn');
-const noZone = document.getElementById('noZone');
+const noBtn  = document.getElementById("noBtn");
+const noZone = document.getElementById("noZone");
 
 let armed = false;
 
-// Lock initial position then allow absolute movement
-function armButton() {
-  if (armed) return;
+function armButton(){
+  if(armed) return;
 
   const rect = noBtn.getBoundingClientRect();
-  const zoneRect = noZone.getBoundingClientRect();
+  const zone = noZone.getBoundingClientRect();
 
   noBtn.style.position = "absolute";
-  noBtn.style.left = (rect.left - zoneRect.left) + "px";
-  noBtn.style.top  = (rect.top  - zoneRect.top)  + "px";
+  noBtn.style.left = (rect.left - zone.left) + "px";
+  noBtn.style.top  = (rect.top  - zone.top) + "px";
 
   armed = true;
 }
 
-function moveButtonAway(mouseX, mouseY) {
+function moveButton(){
   armButton();
 
   const zoneRect = noZone.getBoundingClientRect();
   const btnRect  = noBtn.getBoundingClientRect();
 
-  const centerX = btnRect.left + btnRect.width / 2;
-  const centerY = btnRect.top  + btnRect.height / 2;
-
-  let dx = centerX - mouseX;
-  let dy = centerY - mouseY;
-
-  if (dx === 0 && dy === 0) {
-    dx = Math.random() - 0.5;
-    dy = Math.random() - 0.5;
-  }
-
-  const distance = Math.hypot(dx, dy);
-  dx /= distance;
-  dy /= distance;
-
-  const dashDistance = 220;
-
-  let newLeft = (centerX + dx * dashDistance) - zoneRect.left - btnRect.width / 2;
-  let newTop  = (centerY + dy * dashDistance) - zoneRect.top  - btnRect.height / 2;
-
-  // keep inside container
   const padding = 10;
-  newLeft = Math.max(padding, Math.min(newLeft, zoneRect.width - btnRect.width - padding));
-  newTop  = Math.max(padding, Math.min(newTop,  zoneRect.height - btnRect.height - padding));
 
-  noBtn.style.left = newLeft + "px";
-  noBtn.style.top  = newTop  + "px";
+  const maxX = zoneRect.width  - btnRect.width  - padding;
+  const maxY = zoneRect.height - btnRect.height - padding;
 
-  // smooth transition
-  noBtn.style.transition = "left 0.15s ease-out, top 0.15s ease-out";
+  const randomX = Math.random() * maxX + padding;
+  const randomY = Math.random() * maxY + padding;
+
+  noBtn.style.transition = "left .18s ease-out, top .18s ease-out";
+  noBtn.style.left = randomX + "px";
+  noBtn.style.top  = randomY + "px";
 }
 
-// Move when mouse gets close
-noZone.addEventListener("pointermove", (e) => {
+/* Move when mouse gets close */
+noZone.addEventListener("pointermove", (e)=>{
   const btnRect = noBtn.getBoundingClientRect();
-  const centerX = btnRect.left + btnRect.width / 2;
-  const centerY = btnRect.top  + btnRect.height / 2;
+  const dist = Math.hypot(
+    e.clientX - (btnRect.left + btnRect.width/2),
+    e.clientY - (btnRect.top  + btnRect.height/2)
+  );
 
-  const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-
-  if (dist < 140) {
-    moveButtonAway(e.clientX, e.clientY);
+  if(dist < 140){
+    moveButton();
   }
 });
 
-// Escape on click attempt
-noBtn.addEventListener("pointerdown", (e) => {
+/* Escape if clicked */
+noBtn.addEventListener("pointerdown",(e)=>{
   e.preventDefault();
-  moveButtonAway(e.clientX, e.clientY);
+  moveButton();
 });
 
+/* YES BUTTON */
+document.getElementById("yesBtn").addEventListener("click",()=>{
+  alert("YAYYYYY 💖💖💖");
+});
 
-
-    /* -----------------------------
-       CONFETTI
-    ------------------------------*/
-    const confettiCanvas = document.getElementById("confetti");
-    const ctx = confettiCanvas.getContext("2d");
-
-    function resizeConfetti(){
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeConfetti);
-    resizeConfetti();
-
-    let confettiPieces = [];
-    let confettiOn = false;
-
-    function spawnConfetti() {
-      confettiPieces = [];
-      const count = 220;
-      for (let i=0;i<count;i++){
-        confettiPieces.push({
-          x: Math.random()*confettiCanvas.width,
-          y: -20 - Math.random()*confettiCanvas.height*0.3,
-          w: 6 + Math.random()*10,
-          h: 6 + Math.random()*14,
-          vx: -2 + Math.random()*4,
-          vy: 2 + Math.random()*6,
-          r: Math.random()*Math.PI,
-          vr: -0.2 + Math.random()*0.4,
-          c: `hsl(${Math.floor(Math.random()*360)}, 90%, 60%)`,
-          a: 0.85
-        });
-      }
-      confettiOn = true;
-      requestAnimationFrame(drawConfetti);
-      setTimeout(()=> confettiOn=false, 4200);
-    }
-
-    function drawConfetti(){
-      ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
-      for (const p of confettiPieces){
-        p.x += p.vx;
-        p.y += p.vy;
-        p.r += p.vr;
-        p.vy += 0.03;
-
-        ctx.save();
-        ctx.globalAlpha = p.a;
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.r);
-        ctx.fillStyle = p.c;
-        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-        ctx.restore();
-      }
-
-      confettiPieces = confettiPieces.filter(p => p.y < confettiCanvas.height + 40);
-
-      if (confettiOn || confettiPieces.length){
-        requestAnimationFrame(drawConfetti);
-      }
-    }
-
-    /* -----------------------------
-       YES click -> page2 + confetti
-    ------------------------------*/
-    yesBtn.addEventListener("click", () => {
-      spawnConfetti();
-      showPage(2);
-      window.scrollTo(0,0);
-    });
-
-    /* -----------------------------
-       Envelope click -> page3 + typing
-    ------------------------------*/
-    const envelope = document.getElementById("envelope");
-    const typedText = document.getElementById("typedText");
-    const cursor = document.getElementById("cursor");
-
-    const letter =
-`I can't wait to spend the rest of my life with you pooks.
-
-You've given life a new purpose.
-You've given me something to smile about every day.
-You've given me a reason to be better every day.
-
-I hope we grow into big back young adults, big back real adults,
-and big back parents with our big back children.
-
-I don't know what the future holds for us,
-but I know with you by my side, everything will be going right.
-
-Signed,
-your tubby mans 💘`;
-
-    let typingStarted = false;
-
-    function typeIt(text, speed=22){
-      typedText.textContent = "";
-      cursor.style.display = "inline-block";
-      let i = 0;
-
-      function tick(){
-        typedText.textContent = text.slice(0, i);
-        i++;
-        if (i <= text.length){
-          setTimeout(tick, speed);
-        } else {
-          cursor.style.display = "none";
-        }
-      }
-      tick();
-    }
-
-    envelope.addEventListener("click", () => {
-      showPage(3);
-      if (!typingStarted){
-        typingStarted = true;
-        typeIt(letter, 18);
-      }
-    });
-
-    /* -----------------------------
-       IMPORTANT PATH NOTES:
-       - Photos: keep 1.jpg .. 25.jpg next to this HTML file.
-       - Music: keep song.mp3 next to this HTML file.
-    ------------------------------*/
-  </script>
+</script>
 </body>
 </html>
-
-
-
-
-
-
