@@ -151,17 +151,88 @@ function typeIt(text,speed=22){typedText.textContent="";cursor.style.display="in
 envelope.addEventListener("click",()=>{showPage(3);if(!typingStarted){typingStarted=true;typeIt(letter,18);}});
 
 // NO BUTTON SLOWER
-const noBtn=document.getElementById('noBtn');
-const noZone=document.getElementById('noZone');
-let armed=false;
-function arm(){if(armed)return; const left=noBtn.offsetLeft; const top=noBtn.offsetTop; noBtn.style.position='absolute'; noBtn.style.left=left+'px'; noBtn.style.top=top+'px'; armed=true;}
-function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
-function dashAwayFrom(mx,my){arm();const zoneRect=noZone.getBoundingClientRect();const btnRect=noBtn.getBoundingClientRect();const relX=mx-zoneRect.left;const relY=my-zoneRect.top;let btnX=(btnRect.left-zoneRect.left)+btnRect.width/2;let btnY=(btnRect.top-zoneRect.top)+btnRect.height/2;let dx=btnX-relX;let dy=btnY-relY;if(dx===0&&dy===0){dx=(Math.random()-0.5);dy=(Math.random()-0.5);}const len=Math.hypot(dx,dy);dx/=len;dy/=len;const dash=80;let newCenterX=btnX+dx*dash;let newCenterY=btnY+dy*dash;const pad=10;newCenterX=clamp(newCenterX,pad+btnRect.width/2,zoneRect.width-pad-btnRect.width/2);newCenterY=clamp(newCenterY,pad+btnRect.height/2,zoneRect.height-pad-btnRect.height/2);noBtn.style.transition="left .25s ease, top .25s ease";noBtn.style.left=newCenterX-btnRect.width/2+'px';noBtn.style.top=newCenterY-btnRect.height/2+'px';}
-let last=0;
-noZone.addEventListener('pointermove',(e)=>{const now=performance.now();if(now-last<50)return;const btnRect=noBtn.getBoundingClientRect();const cx=btnRect.left+btnRect.width/2;const cy=btnRect.top+btnRect.height/2;const dist=Math.hypot(e.clientX-cx,e.clientY-cy);if(dist<140){last=now;dashAwayFrom(e.clientX,e.clientY);}});
-noBtn.addEventListener('pointerdown',(e)=>{e.preventDefault();dashAwayFrom(e.clientX,e.clientY);});
+const noBtn  = document.getElementById("noBtn");
+const noZone = document.getElementById("noZone");
+
+let armed = false;
+
+function arm() {
+  if (armed) return;
+
+  const left = noBtn.offsetLeft;
+  const top  = noBtn.offsetTop;
+
+  noBtn.classList.add("runaway");
+  noBtn.style.left = left + "px";
+  noBtn.style.top  = top + "px";
+
+  armed = true;
+}
+
+function moveNoButtonAwayFrom(mx, my) {
+  arm();
+
+  const zoneRect = noZone.getBoundingClientRect();
+  const btnRect  = noBtn.getBoundingClientRect();
+
+  const relX = mx - zoneRect.left;
+  const relY = my - zoneRect.top;
+
+  const curLeft = parseFloat(noBtn.style.left || "0");
+  const curTop  = parseFloat(noBtn.style.top  || "0");
+
+  const btnCX = curLeft + btnRect.width / 2;
+  const btnCY = curTop  + btnRect.height / 2;
+
+  let dx = btnCX - relX;
+  let dy = btnCY - relY;
+  let len = Math.hypot(dx, dy) || 1;
+  dx /= len; dy /= len;
+
+  const dash = 220;
+
+  let newCX = btnCX + dx * dash;
+  let newCY = btnCY + dy * dash;
+
+  const pad = 10;
+  const minX = pad + btnRect.width / 2;
+  const maxX = zoneRect.width  - pad - btnRect.width / 2;
+  const minY = pad + btnRect.height / 2;
+  const maxY = zoneRect.height - pad - btnRect.height / 2;
+
+  newCX = Math.max(minX, Math.min(maxX, newCX));
+  newCY = Math.max(minY, Math.min(maxY, newCY));
+
+  noBtn.style.left = (newCX - btnRect.width / 2) + "px";
+  noBtn.style.top  = (newCY - btnRect.height / 2) + "px";
+}
+
+let last = 0;
+
+noZone.addEventListener("pointermove", (e) => {
+  const now = performance.now();
+  if (now - last < 40) return;
+
+  const b = noBtn.getBoundingClientRect();
+  const cx = b.left + b.width / 2;
+  const cy = b.top  + b.height / 2;
+
+  const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+
+  if (dist < 160) {
+    last = now;
+    moveNoButtonAwayFrom(e.clientX, e.clientY);
+  }
+});
+
+noBtn.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  moveNoButtonAwayFrom(e.clientX, e.clientY);
+});
+
 
 // CONFETTI (original code omitted for brevity, keep your working version)
 </script>
 </body>
 </html>
+
