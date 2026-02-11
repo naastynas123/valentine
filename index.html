@@ -21,12 +21,19 @@ h1{ margin:0; font-size: clamp(34px, 5vw, 62px); letter-spacing:.5px; text-shado
 .audioBtn:active{ transform: translateY(1px) scale(.99); } 
 .audioDot{ width:10px; height:10px; border-radius:999px; background:#ff4d6d; box-shadow: 0 0 0 5px rgba(255,77,109,.18); } 
 .audioDot.on{ background:#38d26a; box-shadow: 0 0 0 5px rgba(56,210,106,.18); } 
+
 .btnRow{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-top:10px; } 
 .btn{ border:0; border-radius:999px; padding:14px 26px; font-weight:900; font-size:18px; cursor:pointer; color:#fff; box-shadow: 0 14px 30px rgba(0,0,0,.35); transition: transform .12s ease, filter .2s ease; user-select:none; min-width: 160px; } 
 .btn:hover{ transform: translateY(-2px); filter: brightness(1.03); } 
 .btn:active{ transform: translateY(1px) scale(.99); } 
 .yes{ background: linear-gradient(180deg, var(--green), var(--green2)); } 
 .no{ background: linear-gradient(180deg, var(--red), var(--red2)); position:relative; } 
+
+/* ✅ REQUIRED FOR THE NO-BUTTON GAME */
+#noZone{ position:relative; min-height:90px; }  /* anchors absolute movement + gives room */
+#yesBtn{ position:relative; z-index:2; }        /* stays clickable */
+#noBtn.runaway{ position:absolute; z-index:3; } /* can move + doesn’t break layout */
+
 .page{ display:none; width:100%; } 
 .page.active{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; } 
 .envelopeWrap{ margin-top:12px; display:flex; justify-content:center; align-items:center; } 
@@ -67,40 +74,39 @@ h1{ margin:0; font-size: clamp(34px, 5vw, 62px); letter-spacing:.5px; text-shado
 
 <!-- PAGE 1 -->
 <div id="page1" class="page active">
-<h1>Will you be my Valentine Quyen? 💘</h1>
-<button id="soundBtn" class="audioBtn" type="button">
- <span id="audioDot" class="audioDot"></span>
- <span id="soundText">Play music</span>
-</button>
+  <h1>Will you be my Valentine Quyen? 💘</h1>
 
-<div id="noZone" class="btnRow">
- <button id="yesBtn" class="btn yes" type="button">Yes 💖</button>
- <button id="noBtn" class="btn no" type="button">No 🥺</button>
- 
-</div>
+  <button id="soundBtn" class="audioBtn" type="button">
+    <span id="audioDot" class="audioDot"></span>
+    <span id="soundText">Play music</span>
+  </button>
+
+  <div id="noZone" class="btnRow">
+    <button id="yesBtn" class="btn yes" type="button">Yes 💖</button>
+    <button id="noBtn" class="btn no" type="button">No 🥺</button>
+  </div>
 </div>
 
- 
 <!-- PAGE 2 -->
 <div id="page2" class="page">
-<h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
-<div class="envelopeWrap">
- <div id="envelope" class="envelope" role="button" aria-label="Open letter">
-  <div class="paper"></div>
-  <div class="env-body"></div>
-  <div class="env-flap"></div>
-  <div class="seal"><span>♥</span></div>
-  <div class="clickMeTag">CLICK ME</div>
- </div>
-</div>
+  <h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
+  <div class="envelopeWrap">
+    <div id="envelope" class="envelope" role="button" aria-label="Open letter">
+      <div class="paper"></div>
+      <div class="env-body"></div>
+      <div class="env-flap"></div>
+      <div class="seal"><span>♥</span></div>
+      <div class="clickMeTag">CLICK ME</div>
+    </div>
+  </div>
 </div>
 
 <!-- PAGE 3 -->
 <div id="page3" class="page">
-<div class="letterCard">
-<div class="letterTitle">💌</div>
-<div class="typed"><span id="typedText"></span><span id="cursor" class="cursor">&nbsp;</span></div>
-</div>
+  <div class="letterCard">
+    <div class="letterTitle">💌</div>
+    <div class="typed"><span id="typedText"></span><span id="cursor" class="cursor">&nbsp;</span></div>
+  </div>
 </div>
 
 </div>
@@ -111,15 +117,15 @@ h1{ margin:0; font-size: clamp(34px, 5vw, 62px); letter-spacing:.5px; text-shado
 const COLLAGE_COUNT=25;
 const collage=document.getElementById("collage");
 for(let i=1;i<=COLLAGE_COUNT;i++){
- const tile=document.createElement("div");
- tile.className="tile";
- const img=document.createElement("img");
- img.alt=`photo ${i}`;
- img.loading="lazy";
- img.src=`${i}.jpg`;
- img.onerror=()=>tile.style.display="none";
- tile.appendChild(img);
- collage.appendChild(tile);
+  const tile=document.createElement("div");
+  tile.className="tile";
+  const img=document.createElement("img");
+  img.alt=`photo ${i}`;
+  img.loading="lazy";
+  img.src=`${i}.jpg`;
+  img.onerror=()=>tile.style.display="none";
+  tile.appendChild(img);
+  collage.appendChild(tile);
 }
 
 // AUDIO
@@ -127,8 +133,14 @@ const bgm=document.getElementById("bgm");
 const soundBtn=document.getElementById("soundBtn");
 const audioDot=document.getElementById("audioDot");
 const soundText=document.getElementById("soundText");
-function setAudioUI(playing){if(playing){audioDot.classList.add("on");soundText.textContent="Music playing (click to pause)";}else{audioDot.classList.remove("on");soundText.textContent="Play music";}}
-async function playMusic(){try{bgm.muted=false;bgm.volume=0.8;await bgm.play();setAudioUI(true);}catch(e){setAudioUI(false);console.error(e);}}
+function setAudioUI(playing){
+  if(playing){audioDot.classList.add("on");soundText.textContent="Music playing (click to pause)";}
+  else{audioDot.classList.remove("on");soundText.textContent="Play music";}
+}
+async function playMusic(){
+  try{bgm.muted=false;bgm.volume=0.8;await bgm.play();setAudioUI(true);}
+  catch(e){setAudioUI(false);console.error(e);}
+}
 function pauseMusic(){bgm.pause();setAudioUI(false);}
 bgm.addEventListener("play",()=>setAudioUI(true));
 bgm.addEventListener("pause",()=>setAudioUI(false));
@@ -138,26 +150,118 @@ soundBtn.addEventListener("click",()=>{if(bgm.paused)playMusic();else pauseMusic
 const page1=document.getElementById("page1");
 const page2=document.getElementById("page2");
 const page3=document.getElementById("page3");
-function showPage(n){[page1,page2,page3].forEach(p=>p.classList.remove("active"));if(n===1)page1.classList.add("active");if(n===2)page2.classList.add("active");if(n===3)page3.classList.add("active");}
+function showPage(n){
+  [page1,page2,page3].forEach(p=>p.classList.remove("active"));
+  if(n===1)page1.classList.add("active");
+  if(n===2)page2.classList.add("active");
+  if(n===3)page3.classList.add("active");
+}
+
+// CONFETTI (needed so YES click doesn't error)
+const confettiCanvas = document.getElementById("confetti");
+const ctx = confettiCanvas.getContext("2d");
+function resizeConfetti(){
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeConfetti);
+resizeConfetti();
+
+let confettiPieces = [];
+let confettiOn = false;
+
+function spawnConfetti() {
+  confettiPieces = [];
+  const count = 220;
+  for (let i=0;i<count;i++){
+    confettiPieces.push({
+      x: Math.random()*confettiCanvas.width,
+      y: -20 - Math.random()*confettiCanvas.height*0.3,
+      w: 6 + Math.random()*10,
+      h: 6 + Math.random()*14,
+      vx: -2 + Math.random()*4,
+      vy: 2 + Math.random()*6,
+      r: Math.random()*Math.PI,
+      vr: -0.2 + Math.random()*0.4,
+      c: `hsl(${Math.floor(Math.random()*360)}, 90%, 60%)`,
+      a: 0.85
+    });
+  }
+  confettiOn = true;
+  requestAnimationFrame(drawConfetti);
+  setTimeout(()=> confettiOn=false, 4200);
+}
+
+function drawConfetti(){
+  ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+  for (const p of confettiPieces){
+    p.x += p.vx;
+    p.y += p.vy;
+    p.r += p.vr;
+    p.vy += 0.03;
+
+    ctx.save();
+    ctx.globalAlpha = p.a;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.r);
+    ctx.fillStyle = p.c;
+    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+    ctx.restore();
+  }
+  confettiPieces = confettiPieces.filter(p => p.y < confettiCanvas.height + 40);
+  if (confettiOn || confettiPieces.length){
+    requestAnimationFrame(drawConfetti);
+  }
+}
 
 // YES
-document.getElementById("yesBtn").addEventListener("click",()=>{spawnConfetti();showPage(2);window.scrollTo(0,0);});
+document.getElementById("yesBtn").addEventListener("click",()=>{
+  spawnConfetti();
+  showPage(2);
+  window.scrollTo(0,0);
+});
 
 // ENVELOPE
 const envelope=document.getElementById("envelope");
 const typedText=document.getElementById("typedText");
 const cursor=document.getElementById("cursor");
-const letter=`I can't wait to spend the rest of my life with you pooks. You've given life a new purpose. You've given me something to smile about every day. You've given me a reason to be better every day. I hope we grow into big back young adults, big back real adults, and big back parents with our big back children. I don't know what the future holds for us, but I know with you by my side, everything will be going right. Signed, your tubby mans 💘`;
-let typingStarted=false;
-function typeIt(text,speed=22){typedText.textContent="";cursor.style.display="inline-block";let i=0;function tick(){typedText.textContent=text.slice(0,i);i++;if(i<=text.length){setTimeout(tick,speed);}else{cursor.style.display="none";}}tick();}
-envelope.addEventListener("click",()=>{showPage(3);if(!typingStarted){typingStarted=true;typeIt(letter,18);}});
+const letter=`I can't wait to spend the rest of my life with you pooks.
 
-// NO BUTTON SLOWER
+You've given life a new purpose.
+You've given me something to smile about every day.
+You've given me a reason to be better every day.
+
+I hope we grow into big back young adults, big back real adults,
+and big back parents with our big back children.
+
+I don't know what the future holds for us,
+but I know with you by my side, everything will be going right.
+
+Signed,
+your tubby mans 💘`;
+let typingStarted=false;
+function typeIt(text,speed=22){
+  typedText.textContent="";
+  cursor.style.display="inline-block";
+  let i=0;
+  function tick(){
+    typedText.textContent=text.slice(0,i);
+    i++;
+    if(i<=text.length){setTimeout(tick,speed);}
+    else{cursor.style.display="none";}
+  }
+  tick();
+}
+envelope.addEventListener("click",()=>{
+  showPage(3);
+  if(!typingStarted){typingStarted=true;typeIt(letter,18);}
+});
+
+// NO BUTTON (NEVER CATCHABLE)
 const noBtn  = document.getElementById("noBtn");
 const noZone = document.getElementById("noZone");
 
 let armed = false;
-
 function arm() {
   if (armed) return;
 
@@ -191,7 +295,7 @@ function moveNoButtonAwayFrom(mx, my) {
   let len = Math.hypot(dx, dy) || 1;
   dx /= len; dy /= len;
 
-  const dash = 220;
+  const dash = 260; // a bit stronger so you never catch it
 
   let newCX = btnCX + dx * dash;
   let newCY = btnCY + dy * dash;
@@ -207,13 +311,20 @@ function moveNoButtonAwayFrom(mx, my) {
 
   noBtn.style.left = (newCX - btnRect.width / 2) + "px";
   noBtn.style.top  = (newCY - btnRect.height / 2) + "px";
+
+  // tiny pop animation
+  noBtn.animate(
+    [{ transform:'scale(1)' }, { transform:'scale(1.05)' }, { transform:'scale(1)' }],
+    { duration: 140, easing: 'ease-out' }
+  );
 }
 
 let last = 0;
 
+// IMPORTANT: pointermove on zone -> continuous chase
 noZone.addEventListener("pointermove", (e) => {
   const now = performance.now();
-  if (now - last < 40) return;
+  if (now - last < 35) return;
 
   const b = noBtn.getBoundingClientRect();
   const cx = b.left + b.width / 2;
@@ -221,24 +332,18 @@ noZone.addEventListener("pointermove", (e) => {
 
   const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
 
-  if (dist < 160) {
+  // bigger number = dodges earlier (harder to catch)
+  if (dist < 200) {
     last = now;
     moveNoButtonAwayFrom(e.clientX, e.clientY);
   }
 });
 
+// If you somehow try click, it escapes too
 noBtn.addEventListener("pointerdown", (e) => {
   e.preventDefault();
   moveNoButtonAwayFrom(e.clientX, e.clientY);
 });
-
-
-// CONFETTI (original code omitted for brevity, keep your working version)
 </script>
 </body>
 </html>
-
-
-
-
-
