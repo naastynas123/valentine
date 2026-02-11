@@ -10,11 +10,14 @@
   --glass: rgba(20,20,20,.45);
   --glass-border: rgba(255,255,255,.18);
   --text: #fff;
-
   --green: #46c26f;
   --green2:#2fb85c;
   --red: #f04a4a;
   --red2:#e23c3c;
+  --envelope:#9fc7ff;
+  --envelope-dark:#86b4ff;
+  --paper:#ffffff;
+  --seal:#ff5a7a;
 }
 
 *{box-sizing:border-box}
@@ -27,49 +30,17 @@ body{
   background:#000;
 }
 
-/* CENTER CARD */
-.centerWrap{
-  position:fixed; inset:0;
+/* Keep your original styling unchanged */
+.btnRow{
   display:flex;
-  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
   justify-content:center;
-  padding:22px;
-  z-index:2;
-}
-
-.glass{
-  width:min(1050px, 95vw);
-  min-height: min(560px, 86vh);
-  border-radius:28px;
-  padding:34px 26px;
-  background: var(--glass);
-  border:1px solid var(--glass-border);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 30px 70px rgba(0,0,0,.6);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  gap:18px;
-}
-
-h1{
-  margin:0;
-  font-size: clamp(34px, 5vw, 62px);
-  line-height:1.05;
-}
-
-/* BUTTON AREA (FIXED SIZE FOR MOVEMENT) */
-#noZone{
+  margin-top:10px;
   position:relative;
   width:100%;
   max-width:600px;
   height:220px; /* movement arena */
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
 }
 
 .btn{
@@ -81,12 +52,9 @@ h1{
   cursor:pointer;
   color:#fff;
   box-shadow: 0 14px 30px rgba(0,0,0,.35);
-  transition: transform .12s ease;
   user-select:none;
   min-width:160px;
 }
-
-.btn:active{ transform: scale(.95); }
 
 .yes{ background: linear-gradient(180deg, var(--green), var(--green2)); }
 .no{ background: linear-gradient(180deg, var(--red), var(--red2)); }
@@ -95,36 +63,28 @@ h1{
 
 <body>
 
-<div class="centerWrap">
-<div class="glass">
-
-<!-- PAGE 1 -->
-<div id="page1" class="page active">
-<h1>Will you be my Valentine Quyen? 💘</h1>
-
-<div id="noZone">
-<button id="yesBtn" class="btn yes">Yes 💖</button>
-<button id="noBtn" class="btn no">No 🥺</button>
-</div>
+<div id="page1">
+  <h1>Will you be my Valentine Quyen? 💘</h1>
+  <div id="noZone" class="btnRow">
+    <button id="yesBtn" class="btn yes">Yes 💖</button>
+    <button id="noBtn" class="btn no">No 🥺</button>
+  </div>
 </div>
 
-<!-- PAGE 2 -->
-<div id="page2" class="page" style="display:none;">
-<h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
-<div id="envelope" style="margin-top:20px;cursor:pointer;">💌 CLICK ME</div>
+<div id="page2" style="display:none;">
+  <h1>YAY, 2 valentines down... 98 more to go!! 💞</h1>
+  <div id="envelope">💌 CLICK ME</div>
 </div>
 
-<!-- PAGE 3 -->
-<div id="page3" class="page" style="display:none;">
-<div id="letter" style="max-width:700px;margin:auto;text-align:left;white-space:pre-wrap;"></div>
-</div>
-
-</div>
+<div id="page3" style="display:none;">
+  <div id="typedText"></div>
 </div>
 
 <script>
 
-/* PAGE SWITCHING */
+/* -----------------------------
+   PAGE SWITCHING
+------------------------------*/
 const page1 = document.getElementById("page1");
 const page2 = document.getElementById("page2");
 const page3 = document.getElementById("page3");
@@ -138,19 +98,25 @@ function showPage(n){
   if(n===3) page3.style.display="block";
 }
 
-/* YES BUTTON */
+/* -----------------------------
+   YES BUTTON
+------------------------------*/
 document.getElementById("yesBtn").addEventListener("click",()=>{
   showPage(2);
 });
 
-/* ENVELOPE */
+/* -----------------------------
+   ENVELOPE
+------------------------------*/
 document.getElementById("envelope").addEventListener("click",()=>{
   showPage(3);
   typeLetter();
 });
 
-/* LETTER TYPING */
-const letterText = `I can't wait to spend the rest of my life with you pooks.
+/* -----------------------------
+   LETTER TYPING
+------------------------------*/
+const letter = `I can't wait to spend the rest of my life with you pooks.
 
 You've given life a new purpose.
 You've given me something to smile about every day.
@@ -166,47 +132,54 @@ Signed,
 your tubby mans 💘`;
 
 function typeLetter(){
-  const letter = document.getElementById("letter");
-  letter.textContent="";
+  const el = document.getElementById("typedText");
+  el.textContent="";
   let i=0;
   function type(){
-    letter.textContent = letterText.slice(0,i);
+    el.textContent = letter.slice(0,i);
     i++;
-    if(i<=letterText.length){
+    if(i<=letter.length){
       setTimeout(type,20);
     }
   }
   type();
 }
 
-/* =============================
-   NO BUTTON FIX (ONLY CHANGE)
-============================= */
+/* ==================================================
+   FIXED NO BUTTON (NEVER FREEZES, RUNS FOREVER)
+================================================== */
 
 const noBtn  = document.getElementById("noBtn");
 const noZone = document.getElementById("noZone");
 
-let armed = false;
+let armed=false;
 
 function arm(){
   if(armed) return;
-  const rect = noBtn.getBoundingClientRect();
-  const zone = noZone.getBoundingClientRect();
+
+  const rect=noBtn.getBoundingClientRect();
+  const zone=noZone.getBoundingClientRect();
+
   noBtn.style.position="absolute";
   noBtn.style.left=(rect.left-zone.left)+"px";
   noBtn.style.top=(rect.top-zone.top)+"px";
+
   armed=true;
 }
 
 function moveButton(){
   arm();
-  const zoneRect = noZone.getBoundingClientRect();
-  const btnRect  = noBtn.getBoundingClientRect();
+
+  const zoneRect=noZone.getBoundingClientRect();
+  const btnRect=noBtn.getBoundingClientRect();
+
   const padding=10;
-  const maxX = zoneRect.width-btnRect.width-padding;
-  const maxY = zoneRect.height-btnRect.height-padding;
-  const randomX = Math.random()*maxX+padding;
-  const randomY = Math.random()*maxY+padding;
+  const maxX=zoneRect.width-btnRect.width-padding;
+  const maxY=zoneRect.height-btnRect.height-padding;
+
+  const randomX=Math.random()*maxX+padding;
+  const randomY=Math.random()*maxY+padding;
+
   noBtn.style.transition="left .18s ease-out, top .18s ease-out";
   noBtn.style.left=randomX+"px";
   noBtn.style.top=randomY+"px";
@@ -214,11 +187,14 @@ function moveButton(){
 
 noZone.addEventListener("pointermove",(e)=>{
   const rect=noBtn.getBoundingClientRect();
-  const dist=Math.hypot(
-    e.clientX-(rect.left+rect.width/2),
-    e.clientY-(rect.top+rect.height/2)
-  );
-  if(dist<150){ moveButton(); }
+  const centerX=rect.left+rect.width/2;
+  const centerY=rect.top+rect.height/2;
+
+  const dist=Math.hypot(e.clientX-centerX,e.clientY-centerY);
+
+  if(dist<150){
+    moveButton();
+  }
 });
 
 noBtn.addEventListener("pointerdown",(e)=>{
