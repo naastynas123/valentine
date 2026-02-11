@@ -372,8 +372,7 @@
   <button id="yesBtn" class="btn yes" type="button">Yes 💖</button>
   <button id="noBtn" class="btn no" type="button">No 🥺</button>
 </div>
-      #noZone { position: relative; }
-#noBtn { position: absolute; }
+   
 
 
 
@@ -503,104 +502,85 @@
 /* -----------------------------
    NO button dodges cursor (continuous chase)
 ------------------------------*/
+/* -----------------------------
+   NO button dodges cursor (WORKING VERSION)
+------------------------------*/
 const noBtn  = document.getElementById('noBtn');
 const noZone = document.getElementById('noZone');
 
-if (!noBtn || !noZone) {
-  console.error("Missing #noBtn or #noZone. Check your IDs.");
-}
-
-// Arm: lock its current spot, then switch to absolute so it can move
 let armed = false;
-function arm() {
+
+// Lock initial position then allow absolute movement
+function armButton() {
   if (armed) return;
 
-  const left = noBtn.offsetLeft;
-  const top  = noBtn.offsetTop;
+  const rect = noBtn.getBoundingClientRect();
+  const zoneRect = noZone.getBoundingClientRect();
 
-  noBtn.style.position = 'absolute';
-  noBtn.style.left = left + 'px';
-  noBtn.style.top  = top + 'px';
+  noBtn.style.position = "absolute";
+  noBtn.style.left = (rect.left - zoneRect.left) + "px";
+  noBtn.style.top  = (rect.top  - zoneRect.top)  + "px";
 
   armed = true;
 }
 
-function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
-
-function dashAwayFrom(mx, my) {
-  arm();
+function moveButtonAway(mouseX, mouseY) {
+  armButton();
 
   const zoneRect = noZone.getBoundingClientRect();
   const btnRect  = noBtn.getBoundingClientRect();
 
-  // cursor position relative to the zone
-  const relX = mx - zoneRect.left;
-  const relY = my - zoneRect.top;
+  const centerX = btnRect.left + btnRect.width / 2;
+  const centerY = btnRect.top  + btnRect.height / 2;
 
-  // button center relative to zone
-  const btnX = (btnRect.left - zoneRect.left) + btnRect.width / 2;
-  const btnY = (btnRect.top  - zoneRect.top)  + btnRect.height / 2;
+  let dx = centerX - mouseX;
+  let dy = centerY - mouseY;
 
-  // direction away from cursor
-  let dx = btnX - relX;
-  let dy = btnY - relY;
+  if (dx === 0 && dy === 0) {
+    dx = Math.random() - 0.5;
+    dy = Math.random() - 0.5;
+  }
 
-  // if cursor is exactly on center, pick random direction
-  if (dx === 0 && dy === 0) { dx = (Math.random() - 0.5); dy = (Math.random() - 0.5); }
+  const distance = Math.hypot(dx, dy);
+  dx /= distance;
+  dy /= distance;
 
-  // normalize
-  const len = Math.hypot(dx, dy);
-  dx /= len; dy /= len;
+  const dashDistance = 220;
 
-  // dash distance (bigger = harder to catch)
-  const dash = 180;
+  let newLeft = (centerX + dx * dashDistance) - zoneRect.left - btnRect.width / 2;
+  let newTop  = (centerY + dy * dashDistance) - zoneRect.top  - btnRect.height / 2;
 
-  // new center position
-  let newCenterX = btnX + dx * dash;
-  let newCenterY = btnY + dy * dash;
+  // keep inside container
+  const padding = 10;
+  newLeft = Math.max(padding, Math.min(newLeft, zoneRect.width - btnRect.width - padding));
+  newTop  = Math.max(padding, Math.min(newTop,  zoneRect.height - btnRect.height - padding));
 
-  // keep inside zone
-  const pad = 10;
-  newCenterX = clamp(newCenterX, pad + btnRect.width/2, zoneRect.width  - pad - btnRect.width/2);
-  newCenterY = clamp(newCenterY, pad + btnRect.height/2, zoneRect.height - pad - btnRect.height/2);
+  noBtn.style.left = newLeft + "px";
+  noBtn.style.top  = newTop  + "px";
 
-  // convert center -> top-left for left/top
-  const newLeft = newCenterX - btnRect.width/2;
-  const newTop  = newCenterY - btnRect.height/2;
-
-  noBtn.style.left = newLeft + 'px';
-  noBtn.style.top  = newTop  + 'px';
-
-  // tiny pop animation (optional)
-  noBtn.animate(
-    [{ transform:'scale(1)' }, { transform:'scale(1.05)' }, { transform:'scale(1)' }],
-    { duration: 160, easing: 'ease-out' }
-  );
+  // smooth transition
+  noBtn.style.transition = "left 0.15s ease-out, top 0.15s ease-out";
 }
 
-// Continuous chase: if cursor gets close, dash away
-let last = 0;
-noZone.addEventListener('pointermove', (e) => {
-  const now = performance.now();
-  if (now - last < 50) return; // throttle
-
+// Move when mouse gets close
+noZone.addEventListener("pointermove", (e) => {
   const btnRect = noBtn.getBoundingClientRect();
-  const cx = btnRect.left + btnRect.width / 2;
-  const cy = btnRect.top  + btnRect.height / 2;
+  const centerX = btnRect.left + btnRect.width / 2;
+  const centerY = btnRect.top  + btnRect.height / 2;
 
-  const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+  const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
 
-  if (dist < 140) {           // sensitivity (bigger = dodges earlier)
-    last = now;
-    dashAwayFrom(e.clientX, e.clientY);
+  if (dist < 140) {
+    moveButtonAway(e.clientX, e.clientY);
   }
 });
 
-// If they try to click it, it escapes
-noBtn.addEventListener('pointerdown', (e) => {
+// Escape on click attempt
+noBtn.addEventListener("pointerdown", (e) => {
   e.preventDefault();
-  dashAwayFrom(e.clientX, e.clientY);
+  moveButtonAway(e.clientX, e.clientY);
 });
+
 
 
     /* -----------------------------
@@ -732,6 +712,7 @@ your tubby mans 💘`;
   </script>
 </body>
 </html>
+
 
 
 
