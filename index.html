@@ -145,6 +145,24 @@ h1{
   justify-content:center;
   margin-top:10px;
 }
+  /* Make the button area an "arena" big enough to run around in */
+#noZone{
+  position: relative;
+  width: 100%;
+  min-height: 160px;     /* IMPORTANT: gives room to run */
+  padding: 18px 12px;    /* keeps it inside nicely */
+}
+
+#noBtn.runaway{
+  position: absolute;
+  z-index: 4;
+}
+
+#yesBtn{
+  position: relative;
+  z-index: 5;            /* always clickable */
+}
+
 .btn{
   border:0;
   border-radius:999px;
@@ -578,78 +596,146 @@ envelope.addEventListener("click", ()=>{
    NO BUTTON (REWRITTEN GAME LOGIC)
    Goal: never catchable + keeps moving while you chase.
 ------------------------------*/
+// NO BUTTON (smooth runaway game)
 const noBtn  = document.getElementById("noBtn");
 const noZone = document.getElementById("noZone");
 const yesBtn = document.getElementById("yesBtn");
 
 let armed = false;
 
-// pointer tracking
-let px = 0, py = 0;
-let pointerInsideZone = false;
-let lastPointerMove = 0;
+// button position (relative to noZone)
+let x = 0, y = 0;
+let vx = 0, vy = 0;
 
-// move throttles
-let lastJump = 0;
-let rafRunning = false;
+// pointer
+let mx = 0, my = 0;
+let inside = false;
 
-// Arm: keep initial flex position, then switch to absolute in-place
-function armNo(){
+// tune these
+const SPEED = 7.5;        // how fast it runs
+const PANIC_DIST = 160;   // starts fleeing when you get close
+const FRICTION = 0.86;    // smoothness
+
+function arm(){
   if (armed) return;
+
+  // lock where it currently sits, then make it absolute
   const left = noBtn.offsetLeft;
   const top  = noBtn.offsetTop;
 
   noBtn.classList.add("runaway");
-  noBtn.style.left = left + "px";
-  noBtn.style.top  = top + "px";
+  x = left;
+  y = top;
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top  = y + "px";
 
   armed = true;
 }
 
-function rectsOverlap(a, b){
-  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+function getBounds(){
+  const z = noZone.getBoundingClientRect();
+  const b = noBtn.getBoundingClientRect();
+  return {
+    w: z.width,
+    h: z.height,
+    bw: b.width,
+    bh: b.height
+  };
 }
 
-// pick a safe spot inside the zone, far from cursor, not on YES
-function teleportNo(){
-  armNo();
-
-  const zoneRect = noZone.getBoundingClientRect();
-  const btnRect  = noBtn.getBoundingClientRect();
-  const yesRect  = yesBtn.getBoundingClientRect();
-
-  const pad = 10;
-  const maxX = Math.max(0, zoneRect.width  - btnRect.width  - pad*2);
-  const maxY = Math.max(0, zoneRect.height - btnRect.height - pad*2);
-
-  let best = { x: pad, y: pad, score: -1 };
-
-  for(let i=0;i<25;i++){
-    const x = pad + Math.random() * maxX;
-    const y = pad + Math.random() * maxY;
-
-    // candidate rect in viewport
-    const cand = {
-      left: zoneRect.left + x,
-      top:  zoneRect.top  + y,
-      right: zoneRect.left + x + btnRect.width,
-      bottom: zoneRect.top + y + btnRect.height
-    };
-
-    // don't overlap YES
-    if (rectsOverlap(cand, yesRect)) continue;
-
-    // score = distance from cursor (bigger is better)
-    const cx = (cand.left + cand.right)/2;
-    const cy = (cand.top + cand.bottom)/2;
-    const score = Math.hypot(px - cx, py - cy);
-
-    if (score > best.score) best = { x, y, score };
+function tick(){
+  if (!armed || !inside){
+    requestAnimationFrame(tick);
+    return;
   }
 
-  noBtn.style.left = best.x + "px";
-  noBtn.style.top  = best.y + "px";
+  const { w, h, bw, bh } = getBounds();
+
+  // button center in zone coords
+  const cx = x + bw/2;
+  const cy = y + bh/2;
+
+  // vector away from mouse (mouse coords are already zone-relative below)
+  let dx = cx - mx;
+  let dy = cy - my;
+  const dist = Math.hypot(dx, dy) || 1;
+
+  // If close: run away strongly. If not close: still drift so it never "stops".
+  let ax = 0, ay = 0;
+
+  if (dist < PANIC_DIST){
+    dx /= dist; dy /= dist;
+    ax = dx * SPEED;
+    ay = dy * SPEED;
+  } else {
+    // gentle wandering so it doesn't freeze far away
+    ax = (Math.random() - 0.5) * 0.35;
+    ay = (Math.random() - 0.5) * 0.35;
+  }
+
+  vx = (vx + ax) * FRICTION;
+  vy = (vy + ay) * FRICTION;
+
+  x += vx;
+  y += vy;
+
+  // keep inside zone
+  const pad = 8;
+  const minX = pad;
+  const minY = pad;
+  const maxX = Math.max(minX, w - bw - pad);
+  const maxY = Math.max(minY, h - bh - pad);
+
+  // bounce off walls
+  if (x <= minX){ x = minX; vx *= -0.9; }
+  if (x >= maxX){ x = maxX; vx *= -0.9; }
+  if (y <= minY){ y = minY; vy *= -0.9; }
+  if (y >= maxY){ y = maxY; vy *= -0.9; }
+
+  // never sit on top of YES
+  const yes = yesBtn.getBoundingClientRect();
+  const zone = noZone.getBoundingClientRect();
+  const btnRect = {
+    left: zone.left + x, top: zone.top + y,
+    right: zone.left + x + bw, bottom: zone.top + y + bh
+  };
+  const overlap =
+    !(btnRect.right < yes.left || btnRect.left > yes.right || btnRect.bottom < yes.top || btnRect.top > yes.bottom);
+
+  if (overlap){
+    // push away from YES
+    x = clamp(x + (Math.random() < 0.5 ? -60 : 60), minX, maxX);
+    y = clamp(y + (Math.random() < 0.5 ? -50 : 50), minY, maxY);
+  }
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top  = y + "px";
+
+  requestAnimationFrame(tick);
 }
+
+// pointer coords in zone space
+noZone.addEventListener("pointerenter", () => { inside = true; arm(); });
+noZone.addEventListener("pointerleave", () => { inside = false; });
+noZone.addEventListener("pointermove", (e) => {
+  const r = noZone.getBoundingClientRect();
+  mx = e.clientX - r.left;
+  my = e.clientY - r.top;
+});
+
+// if you try click it, it instantly jumps away
+noBtn.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  arm();
+  vx += (Math.random()<0.5?-1:1)*SPEED*2.2;
+  vy += (Math.random()<0.5?-1:1)*SPEED*1.8;
+});
+
+requestAnimationFrame(tick);
+
 
 // main game loop: while you’re chasing, it keeps moving
 function tick(){
@@ -711,3 +797,4 @@ noBtn.addEventListener("pointerdown", (e)=>{
 </script>
 </body>
 </html>
+
